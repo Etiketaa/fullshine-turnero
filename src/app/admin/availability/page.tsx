@@ -16,6 +16,7 @@ export default function AvailabilityPage() {
   const [loading, setLoading] = useState(true);
   const [newBlockDate, setNewBlockDate] = useState("");
   const [newBlockReason, setNewBlockReason] = useState("");
+  const [editingSchedule, setEditingSchedule] = useState<{ day: number; start: string; end: string } | null>(null);
 
   useEffect(() => {
     fetchData();
@@ -31,12 +32,25 @@ export default function AvailabilityPage() {
     setLoading(false);
   }
 
+  async function createSchedule(dayOfWeek: number) {
+    const { error } = await supabase
+      .from("schedules")
+      .insert({ day_of_week: dayOfWeek, start_time: "09:00", end_time: "18:00", is_active: true });
+    
+    if (!error) fetchData();
+  }
+
   async function updateSchedule(id: string, startTime: string, endTime: string, isActive: boolean) {
     const { error } = await supabase
       .from("schedules")
       .update({ start_time: startTime, end_time: endTime, is_active: isActive })
       .eq("id", id);
     
+    if (!error) fetchData();
+  }
+
+  async function deleteSchedule(id: string) {
+    const { error } = await supabase.from("schedules").delete().eq("id", id);
     if (!error) fetchData();
   }
 
@@ -76,6 +90,8 @@ export default function AvailabilityPage() {
           <div className="bg-white/5 border border-white/5 rounded-2xl overflow-hidden text-sm">
             {DAYS.map((day, index) => {
               const schedule = schedules.find(s => s.day_of_week === index);
+              const isEditing = editingSchedule?.day === index;
+              
               return (
                 <div key={day} className="flex items-center justify-between p-4 border-b border-white/5 last:border-0 hover:bg-white/[0.02] transition-all">
                   <div className="w-24 font-bold text-gray-300">{day}</div>
@@ -101,9 +117,24 @@ export default function AvailabilityPage() {
                       >
                         {schedule.is_active ? 'Activo' : 'Cerrado'}
                       </button>
+                      <button 
+                        onClick={() => deleteSchedule(schedule.id)}
+                        className="p-1 text-gray-500 hover:text-red-500 transition-colors"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
                     </div>
                   ) : (
-                    <div className="text-gray-600 italic">No configurado</div>
+                    <div className="flex items-center gap-4">
+                      <span className="text-gray-600 italic">Cerrado</span>
+                      <button 
+                        onClick={() => createSchedule(index)}
+                        className="flex items-center gap-1 px-3 py-1 bg-red-600/20 text-red-500 rounded-lg text-xs font-bold hover:bg-red-600/30 transition-all"
+                      >
+                        <Plus className="w-3 h-3" />
+                        Abrir
+                      </button>
+                    </div>
                   )}
                 </div>
               );
