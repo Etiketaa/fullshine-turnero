@@ -8,7 +8,7 @@ import { es } from "date-fns/locale";
 import { supabase } from "@/lib/supabase";
 import { cn, formatCurrency } from "@/lib/utils";
 import { processBookingAction } from "@/app/actions";
-import { ChevronLeft, ChevronRight, Clock, Calendar as CalendarIcon, CheckCircle2, Car } from "lucide-react";
+import { ChevronLeft, ChevronRight, Clock, Calendar as CalendarIcon, CheckCircle2, Car, AlertTriangle } from "lucide-react";
 
 type Service = {
   id: string;
@@ -44,6 +44,7 @@ function BookingContent() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [whatsappUrl, setWhatsappUrl] = useState("");
+  const [duplicateWarning, setDuplicateWarning] = useState<string | null>(null);
 
   // Fetch services
   useEffect(() => {
@@ -114,8 +115,33 @@ function BookingContent() {
   const handleBooking = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setDuplicateWarning(null);
 
     try {
+      // Check for duplicate appointment
+      const { data: existingClient } = await supabase
+        .from("clients")
+        .select("id")
+        .eq("email", formData.email)
+        .single();
+
+      if (existingClient) {
+        const { data: existingAppointment } = await supabase
+          .from("appointments")
+          .select("id")
+          .eq("client_id", existingClient.id)
+          .eq("service_id", selectedService?.id)
+          .eq("date", format(selectedDate, "yyyy-MM-dd"))
+          .neq("status", "cancelled")
+          .single();
+
+        if (existingAppointment) {
+          setDuplicateWarning("Ya tenés un turno reservado para este servicio en esta fecha. Si necesitás otro turno, por favor contactanos por WhatsApp.");
+          setIsSubmitting(false);
+          return;
+        }
+      }
+
       // 1. Create/Update Client
       const { data: clientData, error: clientError } = await supabase
         .from("clients")
@@ -468,6 +494,13 @@ _Enviado desde el sistema de reservas de Fullshine Car Detailing_`;
                       </div>
                     </div>
                   </div>
+
+                  {duplicateWarning && (
+                    <div className="p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-xl flex items-start gap-3">
+                      <AlertTriangle className="w-5 h-5 text-yellow-500 mt-0.5 flex-shrink-0" />
+                      <p className="text-sm text-yellow-500">{duplicateWarning}</p>
+                    </div>
+                  )}
 
                   <button
                     disabled={isSubmitting}

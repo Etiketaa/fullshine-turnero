@@ -26,10 +26,6 @@ export default function AdminClients() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
 
-  useEffect(() => {
-    fetchClients();
-  }, []);
-
   async function fetchClients() {
     setLoading(true);
     const { data, error } = await supabase
@@ -40,6 +36,10 @@ export default function AdminClients() {
     if (data) setClients(data);
     setLoading(false);
   }
+
+  useEffect(() => {
+    fetchClients();
+  }, []);
 
   const filteredClients = clients.filter(client => 
     `${client.first_name} ${client.last_name}`.toLowerCase().includes(searchTerm.toLowerCase()) ||

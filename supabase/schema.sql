@@ -18,6 +18,21 @@ CREATE TABLE clients (
   last_name TEXT NOT NULL,
   email TEXT UNIQUE NOT NULL,
   phone TEXT,
+  address TEXT,
+  notes TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- Create vehicles table
+CREATE TABLE vehicles (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  client_id UUID REFERENCES clients(id) ON DELETE CASCADE,
+  brand TEXT NOT NULL,
+  model TEXT NOT NULL,
+  year INTEGER,
+  color TEXT,
+  license_plate TEXT,
+  notes TEXT,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
@@ -25,11 +40,54 @@ CREATE TABLE clients (
 CREATE TABLE appointments (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   client_id UUID REFERENCES clients(id) ON DELETE CASCADE,
+  vehicle_id UUID REFERENCES vehicles(id) ON DELETE SET NULL,
   service_id UUID REFERENCES services(id) ON DELETE SET NULL,
   date DATE NOT NULL,
   time TIME NOT NULL,
+  duration_minutes INTEGER,
   status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'confirmed', 'cancelled', 'completed')),
   notes TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- Create work_orders table
+CREATE TABLE work_orders (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  client_id UUID REFERENCES clients(id) ON DELETE CASCADE,
+  vehicle_id UUID REFERENCES vehicles(id) ON DELETE SET NULL,
+  status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'in_progress', 'completed')),
+  total DECIMAL(10, 2) DEFAULT 0,
+  discount DECIMAL(10, 2) DEFAULT 0,
+  notes TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
+  completed_at TIMESTAMP WITH TIME ZONE
+);
+
+-- Create work_order_items table
+CREATE TABLE work_order_items (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  work_order_id UUID REFERENCES work_orders(id) ON DELETE CASCADE,
+  service_id UUID REFERENCES services(id) ON DELETE SET NULL,
+  quantity INTEGER DEFAULT 1,
+  unit_price DECIMAL(10, 2) NOT NULL,
+  subtotal DECIMAL(10, 2) NOT NULL,
+  notes TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- Create products table
+CREATE TABLE products (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  name TEXT NOT NULL,
+  description TEXT,
+  category TEXT,
+  brand TEXT,
+  purchase_price DECIMAL(10, 2),
+  sale_price DECIMAL(10, 2),
+  stock INTEGER DEFAULT 0,
+  min_stock INTEGER DEFAULT 0,
+  unit TEXT DEFAULT 'unit' CHECK (unit IN ('unit', 'liter', 'kg', 'ml')),
+  is_active BOOLEAN DEFAULT true,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
@@ -53,31 +111,52 @@ CREATE TABLE blocks (
 -- Enable Row Level Security (RLS)
 ALTER TABLE services ENABLE ROW LEVEL SECURITY;
 ALTER TABLE clients ENABLE ROW LEVEL SECURITY;
+ALTER TABLE vehicles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE appointments ENABLE ROW LEVEL SECURITY;
+ALTER TABLE work_orders ENABLE ROW LEVEL SECURITY;
+ALTER TABLE work_order_items ENABLE ROW LEVEL SECURITY;
+ALTER TABLE products ENABLE ROW LEVEL SECURITY;
 ALTER TABLE schedules ENABLE ROW LEVEL SECURITY;
 ALTER TABLE blocks ENABLE ROW LEVEL SECURITY;
 
 -- Policies for services
 CREATE POLICY "Public can read active services" ON services FOR SELECT USING (is_active = true);
-CREATE POLICY "Admins can do everything on services" ON services FOR ALL USING (auth.role() = 'authenticated');
+CREATE POLICY "Anyone can read all services" ON services FOR SELECT USING (true);
+CREATE POLICY "Anyone can insert services" ON services FOR INSERT WITH CHECK (true);
+CREATE POLICY "Anyone can update services" ON services FOR UPDATE USING (true) WITH CHECK (true);
+CREATE POLICY "Anyone can delete services" ON services FOR DELETE USING (true);
 
 -- Policies for clients
-CREATE POLICY "Admins can manage clients" ON clients FOR ALL USING (auth.role() = 'authenticated');
+CREATE POLICY "Anyone can manage clients" ON clients FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "Public can insert clients" ON clients FOR INSERT WITH CHECK (true);
 CREATE POLICY "Public can update clients" ON clients FOR UPDATE USING (true) WITH CHECK (true);
 CREATE POLICY "Public can read clients" ON clients FOR SELECT USING (true);
 
 -- Policies for appointments
+CREATE POLICY "Public can read appointments" ON appointments FOR SELECT USING (true);
 CREATE POLICY "Public can insert appointments" ON appointments FOR INSERT WITH CHECK (true);
-CREATE POLICY "Admins can manage appointments" ON appointments FOR ALL USING (auth.role() = 'authenticated');
+CREATE POLICY "Anyone can update appointments" ON appointments FOR UPDATE USING (true) WITH CHECK (true);
+CREATE POLICY "Anyone can delete appointments" ON appointments FOR DELETE USING (true);
 
 -- Policies for schedules
 CREATE POLICY "Everyone can read schedules" ON schedules FOR SELECT USING (true);
-CREATE POLICY "Admins can manage schedules" ON schedules FOR ALL USING (auth.role() = 'authenticated');
+CREATE POLICY "Anyone can manage schedules" ON schedules FOR ALL USING (true) WITH CHECK (true);
 
 -- Policies for blocks
 CREATE POLICY "Everyone can read blocks" ON blocks FOR SELECT USING (true);
-CREATE POLICY "Admins can manage blocks" ON blocks FOR ALL USING (auth.role() = 'authenticated');
+CREATE POLICY "Anyone can manage blocks" ON blocks FOR ALL USING (true) WITH CHECK (true);
+
+-- Policies for vehicles
+CREATE POLICY "Anyone can manage vehicles" ON vehicles FOR ALL USING (true) WITH CHECK (true);
+
+-- Policies for work_orders
+CREATE POLICY "Anyone can manage work_orders" ON work_orders FOR ALL USING (true) WITH CHECK (true);
+
+-- Policies for work_order_items
+CREATE POLICY "Anyone can manage work_order_items" ON work_order_items FOR ALL USING (true) WITH CHECK (true);
+
+-- Policies for products
+CREATE POLICY "Anyone can manage products" ON products FOR ALL USING (true) WITH CHECK (true);
 
 -- Seed Data - Servicios de Car Detailing
 INSERT INTO services (name, description, category, duration_minutes, price) VALUES

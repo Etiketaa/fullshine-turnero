@@ -10,7 +10,8 @@ import {
   Check, 
   X,
   Clock,
-  Car
+  Car,
+  AlertTriangle
 } from "lucide-react";
 import { cn, formatCurrency } from "@/lib/utils";
 
@@ -28,6 +29,8 @@ export default function AdminServices() {
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [serviceToDelete, setServiceToDelete] = useState<Service | null>(null);
   const [currentService, setCurrentService] = useState<Partial<Service>>({
     name: "",
     description: "",
@@ -80,6 +83,23 @@ export default function AdminServices() {
       .update({ is_active: !currentStatus })
       .eq("id", id);
     if (!error) fetchServices();
+  }
+
+  async function handleDelete() {
+    if (!serviceToDelete) return;
+    
+    const { error } = await supabase
+      .from("services")
+      .delete()
+      .eq("id", serviceToDelete.id);
+    
+    if (!error) {
+      setIsDeleteModalOpen(false);
+      setServiceToDelete(null);
+      fetchServices();
+    } else {
+      alert("Error al eliminar el servicio.");
+    }
   }
 
   return (
@@ -189,7 +209,13 @@ export default function AdminServices() {
                         >
                           <Edit2 className="w-4 h-4" />
                         </button>
-                        <button className="p-2 hover:bg-white/5 rounded-lg text-gray-400 hover:text-red-500 transition-all">
+                        <button 
+                          onClick={() => {
+                            setServiceToDelete(service);
+                            setIsDeleteModalOpen(true);
+                          }}
+                          className="p-2 hover:bg-white/5 rounded-lg text-gray-400 hover:text-red-500 transition-all"
+                        >
                           <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
@@ -293,6 +319,39 @@ export default function AdminServices() {
                   Guardar Cambios
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {isDeleteModalOpen && serviceToDelete && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsDeleteModalOpen(false)} />
+          <div className="relative w-full max-w-md bg-zinc-900 border border-white/10 rounded-2xl p-8 space-y-6">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-red-500/10 rounded-xl">
+                <AlertTriangle className="w-6 h-6 text-red-500" />
+              </div>
+              <h3 className="text-xl font-bold">Eliminar Servicio</h3>
+            </div>
+            <p className="text-gray-400">
+              ¿Estás seguro de que deseas eliminar <span className="text-white font-bold">{serviceToDelete.name}</span>? 
+              Esta acción no se puede deshacer.
+            </p>
+            <div className="flex gap-3">
+              <button 
+                onClick={() => setIsDeleteModalOpen(false)}
+                className="flex-1 py-3 bg-white/5 border border-white/10 rounded-xl font-bold hover:bg-white/10 transition-all"
+              >
+                Cancelar
+              </button>
+              <button 
+                onClick={handleDelete}
+                className="flex-1 py-3 bg-red-600 text-white rounded-xl font-bold hover:bg-red-500 transition-all"
+              >
+                Eliminar
+              </button>
             </div>
           </div>
         </div>

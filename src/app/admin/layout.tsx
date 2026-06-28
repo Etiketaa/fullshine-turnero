@@ -10,7 +10,10 @@ import {
   Car, 
   LogOut,
   Menu,
-  X
+  X,
+  Wrench,
+  Package,
+  FileText
 } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
@@ -27,6 +30,9 @@ export default function AdminLayout({
     { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
     { label: "Disponibilidad", href: "/admin/availability", icon: Calendar },
     { label: "Servicios", href: "/admin/services", icon: Car },
+    { label: "Vehículos", href: "/admin/vehicles", icon: Wrench },
+    { label: "Órdenes", href: "/admin/work-orders", icon: FileText },
+    { label: "Productos", href: "/admin/products", icon: Package },
     { label: "Clientes", href: "/admin/clients", icon: Users },
     { label: "Configuración", href: "/admin/settings", icon: Settings },
   ];

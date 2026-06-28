@@ -12,7 +12,10 @@ import {
   CheckCircle2,
   Clock,
   X,
-  Car
+  Car,
+  Trash2,
+  AlertTriangle,
+  FileText
 } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 
@@ -24,35 +27,55 @@ export default function AdminDashboard() {
   });
   const [upcomingAppointments, setUpcomingAppointments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [appointmentToDelete, setAppointmentToDelete] = useState<any>(null);
 
   useEffect(() => {
-    async function fetchData() {
-      const { data: appointments } = await supabase
-        .from("appointments")
-        .select(`
-          *,
-          client:clients(first_name, last_name, phone),
-          service:services(name, price)
-        `)
-        .order("date", { ascending: true })
-        .order("time", { ascending: true })
-        .limit(20);
-
-      if (appointments) setUpcomingAppointments(appointments);
-
-      const { count: clientCount } = await supabase.from("clients").select("*", { count: "exact", head: true });
-      const { count: appCount } = await supabase.from("appointments").select("*", { count: "exact", head: true });
-      
-      setStats({
-        totalClients: clientCount || 0,
-        totalAppointments: appCount || 0,
-        revenue: 450000,
-      });
-
-      setLoading(false);
-    }
     fetchData();
   }, []);
+
+  async function fetchData() {
+    const { data: appointments } = await supabase
+      .from("appointments")
+      .select(`
+        *,
+        client:clients(first_name, last_name, phone),
+        service:services(name, price)
+      `)
+      .order("date", { ascending: true })
+      .order("time", { ascending: true })
+      .limit(20);
+
+    if (appointments) setUpcomingAppointments(appointments);
+
+    const { count: clientCount } = await supabase.from("clients").select("*", { count: "exact", head: true });
+    const { count: appCount } = await supabase.from("appointments").select("*", { count: "exact", head: true });
+    
+    setStats({
+      totalClients: clientCount || 0,
+      totalAppointments: appCount || 0,
+      revenue: 450000,
+    });
+
+    setLoading(false);
+  }
+
+  async function handleDeleteAppointment() {
+    if (!appointmentToDelete) return;
+    
+    const { error } = await supabase
+      .from("appointments")
+      .delete()
+      .eq("id", appointmentToDelete.id);
+    
+    if (!error) {
+      setIsDeleteModalOpen(false);
+      setAppointmentToDelete(null);
+      fetchData();
+    } else {
+      alert("Error al eliminar el turno.");
+    }
+  }
 
   const statCards = [
     { label: "Turnos Totales", value: stats.totalAppointments, icon: CalendarIcon, color: "text-red-500" },
@@ -126,6 +149,16 @@ export default function AdminDashboard() {
                     </div>
                     <div className="text-xs text-gray-500 uppercase font-bold tracking-widest">{app.client.phone}</div>
                   </div>
+
+                  <button 
+                    onClick={() => {
+                      setAppointmentToDelete(app);
+                      setIsDeleteModalOpen(true);
+                    }}
+                    className="p-2 hover:bg-red-500/10 rounded-lg text-gray-500 hover:text-red-500 transition-all opacity-0 group-hover:opacity-100"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
                 </div>
               ))
             ) : (
@@ -140,18 +173,27 @@ export default function AdminDashboard() {
         <div className="space-y-6">
           <h2 className="text-2xl font-bold">Acciones Rápidas</h2>
           <div className="grid gap-3">
-            <button className="p-4 bg-red-600 text-white font-bold rounded-xl hover:bg-red-500 transition-all text-left flex items-center justify-between">
-              Nuevo Turno Manual
-              <CalendarIcon className="w-5 h-5" />
-            </button>
-            <button className="p-4 bg-white/5 border border-white/10 hover:border-red-500/50 rounded-xl transition-all text-left flex items-center justify-between">
+            <Link 
+              href="/admin/work-orders"
+              className="p-4 bg-red-600 text-white font-bold rounded-xl hover:bg-red-500 transition-all text-left flex items-center justify-between"
+            >
+              Nueva Orden de Trabajo
+              <FileText className="w-5 h-5" />
+            </Link>
+            <Link 
+              href="/admin/services"
+              className="p-4 bg-white/5 border border-white/10 hover:border-red-500/50 rounded-xl transition-all text-left flex items-center justify-between"
+            >
               Gestionar Servicios
               <Car className="w-5 h-5 text-red-500" />
-            </button>
-            <button className="p-4 bg-white/5 border border-white/10 hover:border-red-500/50 rounded-xl transition-all text-left flex items-center justify-between">
+            </Link>
+            <Link 
+              href="/admin/availability"
+              className="p-4 bg-white/5 border border-white/10 hover:border-red-500/50 rounded-xl transition-all text-left flex items-center justify-between"
+            >
               Bloquear Fecha
               <X className="w-5 h-5 text-red-500" />
-            </button>
+            </Link>
           </div>
 
           <div className="p-6 bg-red-600/5 border border-red-600/10 rounded-2xl">
@@ -160,6 +202,39 @@ export default function AdminDashboard() {
           </div>
         </div>
       </div>
+
+      {/* Delete Appointment Modal */}
+      {isDeleteModalOpen && appointmentToDelete && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsDeleteModalOpen(false)} />
+          <div className="relative w-full max-w-md bg-zinc-900 border border-white/10 rounded-2xl p-8 space-y-6">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-red-500/10 rounded-xl">
+                <AlertTriangle className="w-6 h-6 text-red-500" />
+              </div>
+              <h3 className="text-xl font-bold">Eliminar Turno</h3>
+            </div>
+            <p className="text-gray-400">
+              ¿Estás seguro de que deseas eliminar el turno de <span className="text-white font-bold">{appointmentToDelete.client.first_name} {appointmentToDelete.client.last_name}</span> 
+              {" "}para el <span className="text-white font-bold">{format(new Date(appointmentToDelete.date), "eeee d 'de' MMMM", { locale: es })}</span>?
+            </p>
+            <div className="flex gap-3">
+              <button 
+                onClick={() => setIsDeleteModalOpen(false)}
+                className="flex-1 py-3 bg-white/5 border border-white/10 rounded-xl font-bold hover:bg-white/10 transition-all"
+              >
+                Cancelar
+              </button>
+              <button 
+                onClick={handleDeleteAppointment}
+                className="flex-1 py-3 bg-red-600 text-white rounded-xl font-bold hover:bg-red-500 transition-all"
+              >
+                Eliminar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
