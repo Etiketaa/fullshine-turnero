@@ -23,7 +23,7 @@ export default function Home() {
 
       <main className="flex-grow pt-20">
         {/* Hero Section */}
-        <section className="relative h-[90vh] flex items-center overflow-hidden">
+        <section className="relative h-[90vh] flex items-center overflow-hidden z-0">
           <div className="absolute inset-0 bg-gradient-to-r from-black via-black/60 to-transparent z-10" />
           <div className="absolute right-0 top-0 w-1/2 h-full">
             <Image 
@@ -79,7 +79,7 @@ export default function Home() {
         </section>
 
         {/* Services Categories */}
-        <section id="servicios" className="py-32 bg-zinc-950">
+        <section id="servicios" className="py-32 bg-zinc-950 relative z-10 scroll-mt-24">
           <div className="container mx-auto px-6">
             <div className="text-center mb-20">
               <span className="text-red-500 uppercase tracking-widest text-sm font-semibold">Lo que hacemos</span>
@@ -130,7 +130,7 @@ export default function Home() {
         </section>
 
         {/* CTA Section */}
-        <section className="py-32 relative overflow-hidden">
+        <section className="py-32 relative overflow-hidden z-10">
           <div className="absolute inset-0 bg-red-600/10 z-0" />
           <div className="container mx-auto px-6 relative z-10 text-center">
             <h2 className="text-6xl font-bold mb-8">¿Listo para brillar?</h2>
