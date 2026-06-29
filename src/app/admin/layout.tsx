@@ -58,14 +58,14 @@ export default function AdminLayout({
       <div className="flex">
         {/* Sidebar */}
         <aside className={cn(
-          "fixed inset-y-0 left-0 z-50 w-64 bg-black border-r border-white/5 transition-transform duration-300 lg:relative lg:translate-x-0",
+          "fixed inset-y-0 left-0 z-50 w-64 bg-black border-r border-white/5 transition-transform duration-300 lg:relative lg:translate-x-0 flex flex-col",
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         )}>
-          <div className="h-20 flex items-center px-8 border-b border-white/5">
+          <div className="h-20 flex items-center px-8 border-b border-white/5 flex-shrink-0">
             <span className="text-xl font-bold tracking-tighter">FULL<span className="text-red-500 text-sm">SHINE ADMIN</span></span>
           </div>
           
-          <nav className="p-4 space-y-2">
+          <nav className="p-4 space-y-2 flex-1 overflow-y-auto">
             {navItems.map((item) => (
               <Link
                 key={item.href}
@@ -84,7 +84,7 @@ export default function AdminLayout({
             ))}
           </nav>
 
-          <div className="absolute bottom-4 left-4 right-4">
+          <div className="p-4 border-t border-white/5 flex-shrink-0">
             <button 
               onClick={handleLogout}
               className="flex items-center gap-3 w-full px-4 py-3 text-gray-400 hover:text-red-400 hover:bg-red-400/10 rounded-xl transition-all"
