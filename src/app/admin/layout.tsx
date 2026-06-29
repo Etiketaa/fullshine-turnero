@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { 
   LayoutDashboard, 
   Calendar, 
@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/lib/supabase";
 
 export default function AdminLayout({
   children,
@@ -24,6 +25,7 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const navItems = [
@@ -36,6 +38,12 @@ export default function AdminLayout({
     { label: "Clientes", href: "/admin/clients", icon: Users },
     { label: "Configuración", href: "/admin/settings", icon: Settings },
   ];
+
+  async function handleLogout() {
+    await supabase.auth.signOut();
+    router.push("/admin/login");
+    router.refresh();
+  }
 
   return (
     <div className="min-h-screen bg-zinc-950 text-white">
@@ -77,7 +85,10 @@ export default function AdminLayout({
           </nav>
 
           <div className="absolute bottom-4 left-4 right-4">
-            <button className="flex items-center gap-3 w-full px-4 py-3 text-gray-400 hover:text-red-400 hover:bg-red-400/10 rounded-xl transition-all">
+            <button 
+              onClick={handleLogout}
+              className="flex items-center gap-3 w-full px-4 py-3 text-gray-400 hover:text-red-400 hover:bg-red-400/10 rounded-xl transition-all"
+            >
               <LogOut className="w-5 h-5" />
               Cerrar Sesión
             </button>

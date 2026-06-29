@@ -272,7 +272,7 @@ _Enviado desde el sistema de reservas de Fullshine Car Detailing_`;
                   <div key={i} className="h-32 bg-white/5 rounded-2xl animate-pulse" />
                 ))
               ) : (
-                services.map((service) => (
+                services.map((service, index) => (
                   <button
                     key={service.id}
                     onClick={() => {
@@ -280,11 +280,12 @@ _Enviado desde el sistema de reservas de Fullshine Car Detailing_`;
                       setServiceModalOpen(true);
                     }}
                     className={cn(
-                      "text-left p-6 rounded-2xl border transition-all duration-300 group",
+                      "text-left p-6 rounded-2xl border transition-all duration-300 group hover:scale-[1.02] hover:shadow-xl hover:shadow-red-500/10",
                       selectedService?.id === service.id
-                        ? "bg-red-600 border-red-500 text-white"
+                        ? "bg-red-600 border-red-500 text-white scale-[1.02] shadow-xl shadow-red-500/20"
                         : "bg-white/5 border-white/10 hover:border-red-500/50 hover:bg-white/[0.08]"
                     )}
+                    style={{ animationDelay: `${index * 100}ms` }}
                   >
                     <div className="flex justify-between items-start mb-2">
                       <span className={cn(
@@ -370,10 +371,10 @@ _Enviado desde el sistema de reservas de Fullshine Car Detailing_`;
                         key={time}
                         onClick={() => setSelectedTime(time)}
                         className={cn(
-                          "py-3 rounded-xl border text-sm font-medium transition-all",
+                          "py-3 rounded-xl border text-sm font-medium transition-all duration-300 hover:scale-105",
                           selectedTime === time
-                            ? "bg-red-600 border-red-500 text-white font-bold scale-105"
-                            : "bg-white/5 border-white/10 hover:border-red-500/50"
+                            ? "bg-red-600 border-red-500 text-white font-bold scale-105 shadow-lg shadow-red-500/25"
+                            : "bg-white/5 border-white/10 hover:border-red-500/50 hover:bg-white/10"
                         )}
                       >
                         {time}
