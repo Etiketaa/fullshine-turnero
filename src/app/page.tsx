@@ -15,8 +15,8 @@ export default function Home() {
             FULL<span className="text-red-500">SHINE</span>
           </Link>
           <div className="hidden md:flex items-center gap-8 text-sm uppercase tracking-widest font-medium">
+            <Link href="#hero" className="hover:text-red-400 transition-colors">Inicio</Link>
             <Link href="#servicios" className="hover:text-red-400 transition-colors">Servicios</Link>
-            <Link href="#hero" className="hover:text-red-400 transition-colors">Nosotros</Link>
             <Link href="/booking" className="px-6 py-2 bg-red-600 text-white hover:bg-red-500 hover:scale-105 transition-all rounded-full font-bold">
               Reservar
             </Link>
@@ -25,65 +25,6 @@ export default function Home() {
       </nav>
 
       <main className="flex-grow pt-20">
-        {/* Services Categories */}
-        <section id="servicios" className="py-32 bg-zinc-950 relative z-10 scroll-mt-24">
-          <div className="container mx-auto px-6">
-            <AnimateOnScroll>
-              <div className="text-center mb-20">
-                <span className="text-red-500 uppercase tracking-widest text-sm font-semibold">Lo que hacemos</span>
-                <h2 className="text-5xl font-bold mt-4">Nuestros Servicios</h2>
-              </div>
-            </AnimateOnScroll>
-
-            <div className="grid md:grid-cols-3 gap-8">
-              {/* Category: Exterior */}
-              <AnimateOnScroll delay={0}>
-                <div className="group relative h-[500px] overflow-hidden rounded-2xl cursor-pointer">
-                  <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-all duration-500 z-10" />
-                  <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1520340356584-f9917d4ced6a?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center transition-transform duration-700 group-hover:scale-110" />
-                  <div className="absolute inset-x-0 bottom-0 p-10 z-20 bg-gradient-to-t from-black via-black/60 to-transparent">
-                    <h3 className="text-4xl font-bold mb-4 group-hover:translate-x-2 transition-transform duration-300">Exterior</h3>
-                    <p className="text-gray-300 mb-6 max-w-sm">Lavado, pulido, ceramic coating y descontaminación de pintura.</p>
-                    <Link href="/booking?category=Exterior" className="text-red-500 font-bold flex items-center gap-2 group-hover:translate-x-2 transition-transform">
-                      Ver Disponibilidad <ChevronRight className="w-5 h-5" />
-                    </Link>
-                  </div>
-                </div>
-              </AnimateOnScroll>
-
-              {/* Category: Interior */}
-              <AnimateOnScroll delay={150}>
-                <div className="group relative h-[500px] overflow-hidden rounded-2xl cursor-pointer">
-                  <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-all duration-500 z-10" />
-                  <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center transition-transform duration-700 group-hover:scale-110" />
-                  <div className="absolute inset-x-0 bottom-0 p-10 z-20 bg-gradient-to-t from-black via-black/60 to-transparent">
-                    <h3 className="text-4xl font-bold mb-4 group-hover:translate-x-2 transition-transform duration-300">Interior</h3>
-                    <p className="text-gray-300 mb-6 max-w-sm">Limpieza profunda de tapizados, desinfección y tratamiento de cuero.</p>
-                    <Link href="/booking?category=Interior" className="text-red-500 font-bold flex items-center gap-2 group-hover:translate-x-2 transition-transform">
-                      Ver Disponibilidad <ChevronRight className="w-5 h-5" />
-                    </Link>
-                  </div>
-                </div>
-              </AnimateOnScroll>
-
-              {/* Category: Completo */}
-              <AnimateOnScroll delay={300}>
-                <div className="group relative h-[500px] overflow-hidden rounded-2xl cursor-pointer">
-                  <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-all duration-500 z-10" />
-                  <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center transition-transform duration-700 group-hover:scale-110" />
-                  <div className="absolute inset-x-0 bottom-0 p-10 z-20 bg-gradient-to-t from-black via-black/60 to-transparent">
-                    <h3 className="text-4xl font-bold mb-4 group-hover:translate-x-2 transition-transform duration-300">Completo</h3>
-                    <p className="text-gray-300 mb-6 max-w-sm">El paquete total para tu auto: interior + exterior + protección cerámica.</p>
-                    <Link href="/booking?category=Completo" className="text-red-500 font-bold flex items-center gap-2 group-hover:translate-x-2 transition-transform">
-                      Ver Disponibilidad <ChevronRight className="w-5 h-5" />
-                    </Link>
-                  </div>
-                </div>
-              </AnimateOnScroll>
-            </div>
-          </div>
-        </section>
-
         {/* Hero Section */}
         <section id="hero" className="relative h-[90vh] flex items-center overflow-hidden z-0">
           <div className="absolute inset-0 bg-gradient-to-r from-black via-black/60 to-transparent z-10" />
@@ -146,6 +87,62 @@ export default function Home() {
                   <div className="group cursor-default">
                     <div className="text-3xl font-bold text-red-500 group-hover:scale-110 transition-transform">⭐</div>
                     <div className="text-xs uppercase tracking-widest text-gray-500">Premium</div>
+                  </div>
+                </div>
+              </AnimateOnScroll>
+            </div>
+          </div>
+        </section>
+
+        {/* Services Categories */}
+        <section id="servicios" className="py-32 bg-zinc-950 relative z-10 scroll-mt-24">
+          <div className="container mx-auto px-6">
+            <AnimateOnScroll>
+              <div className="text-center mb-20">
+                <span className="text-red-500 uppercase tracking-widest text-sm font-semibold">Lo que hacemos</span>
+                <h2 className="text-5xl font-bold mt-4">Nuestros Servicios</h2>
+              </div>
+            </AnimateOnScroll>
+
+            <div className="grid md:grid-cols-3 gap-8">
+              <AnimateOnScroll delay={0}>
+                <div className="group relative h-[500px] overflow-hidden rounded-2xl cursor-pointer">
+                  <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-all duration-500 z-10" />
+                  <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1520340356584-f9917d4ced6a?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center transition-transform duration-700 group-hover:scale-110" />
+                  <div className="absolute inset-x-0 bottom-0 p-10 z-20 bg-gradient-to-t from-black via-black/60 to-transparent">
+                    <h3 className="text-4xl font-bold mb-4 group-hover:translate-x-2 transition-transform duration-300">Exterior</h3>
+                    <p className="text-gray-300 mb-6 max-w-sm">Lavado, pulido, ceramic coating y descontaminación de pintura.</p>
+                    <Link href="/booking?category=Exterior" className="text-red-500 font-bold flex items-center gap-2 group-hover:translate-x-2 transition-transform">
+                      Ver Disponibilidad <ChevronRight className="w-5 h-5" />
+                    </Link>
+                  </div>
+                </div>
+              </AnimateOnScroll>
+
+              <AnimateOnScroll delay={150}>
+                <div className="group relative h-[500px] overflow-hidden rounded-2xl cursor-pointer">
+                  <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-all duration-500 z-10" />
+                  <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center transition-transform duration-700 group-hover:scale-110" />
+                  <div className="absolute inset-x-0 bottom-0 p-10 z-20 bg-gradient-to-t from-black via-black/60 to-transparent">
+                    <h3 className="text-4xl font-bold mb-4 group-hover:translate-x-2 transition-transform duration-300">Interior</h3>
+                    <p className="text-gray-300 mb-6 max-w-sm">Limpieza profunda de tapizados, desinfección y tratamiento de cuero.</p>
+                    <Link href="/booking?category=Interior" className="text-red-500 font-bold flex items-center gap-2 group-hover:translate-x-2 transition-transform">
+                      Ver Disponibilidad <ChevronRight className="w-5 h-5" />
+                    </Link>
+                  </div>
+                </div>
+              </AnimateOnScroll>
+
+              <AnimateOnScroll delay={300}>
+                <div className="group relative h-[500px] overflow-hidden rounded-2xl cursor-pointer">
+                  <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-all duration-500 z-10" />
+                  <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center transition-transform duration-700 group-hover:scale-110" />
+                  <div className="absolute inset-x-0 bottom-0 p-10 z-20 bg-gradient-to-t from-black via-black/60 to-transparent">
+                    <h3 className="text-4xl font-bold mb-4 group-hover:translate-x-2 transition-transform duration-300">Completo</h3>
+                    <p className="text-gray-300 mb-6 max-w-sm">El paquete total para tu auto: interior + exterior + protección cerámica.</p>
+                    <Link href="/booking?category=Completo" className="text-red-500 font-bold flex items-center gap-2 group-hover:translate-x-2 transition-transform">
+                      Ver Disponibilidad <ChevronRight className="w-5 h-5" />
+                    </Link>
                   </div>
                 </div>
               </AnimateOnScroll>
