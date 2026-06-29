@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { format, addDays, isSameDay, startOfToday } from "date-fns";
 import { es } from "date-fns/locale";
 import { supabase } from "@/lib/supabase";
-import { cn, formatCurrency } from "@/lib/utils";
+import { cn, formatCurrency, formatDuration } from "@/lib/utils";
 import { processBookingAction } from "@/app/actions";
 import { ChevronLeft, ChevronRight, Clock, Calendar as CalendarIcon, CheckCircle2, Car, AlertTriangle, X } from "lucide-react";
 
@@ -305,7 +305,7 @@ _Enviado desde el sistema de reservas de Fullshine Car Detailing_`;
                     </p>
                     <div className="mt-4 flex items-center gap-1.5 text-xs font-medium">
                       <Clock className="w-3.5 h-3.5" />
-                      {service.duration_minutes} min
+                      {formatDuration(service.duration_minutes)}
                     </div>
                   </button>
                 ))
@@ -493,7 +493,7 @@ _Enviado desde el sistema de reservas de Fullshine Car Detailing_`;
                       </div>
                       <div className="flex items-center gap-3 text-sm">
                         <Clock className="w-4 h-4 text-red-500" />
-                        <span>Duración: {selectedService?.duration_minutes} min</span>
+                        <span>Duración: {formatDuration(selectedService?.duration_minutes || 0)}</span>
                       </div>
                     </div>
                   </div>
@@ -547,7 +547,7 @@ _Enviado desde el sistema de reservas de Fullshine Car Detailing_`;
                 <div className="text-xs uppercase tracking-widest text-gray-500 font-bold">Duración</div>
                 <div className="text-2xl font-bold flex items-center gap-2">
                   <Clock className="w-5 h-5 text-red-500" />
-                  {selectedForModal.duration_minutes} min
+                  {formatDuration(selectedForModal.duration_minutes)}
                 </div>
               </div>
             </div>

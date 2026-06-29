@@ -13,7 +13,7 @@ import {
   Car,
   AlertTriangle
 } from "lucide-react";
-import { cn, formatCurrency } from "@/lib/utils";
+import { cn, formatCurrency, formatDuration } from "@/lib/utils";
 
 type Service = {
   id: string;
@@ -179,7 +179,7 @@ export default function AdminServices() {
                     </td>
                     <td className="px-6 py-4 text-sm flex items-center gap-1.5 text-gray-400">
                       <Clock className="w-3.5 h-3.5" />
-                      {service.duration_minutes} min
+                      {formatDuration(service.duration_minutes)}
                     </td>
                     <td className="px-6 py-4 font-bold text-red-500">
                       {formatCurrency(service.price)}
