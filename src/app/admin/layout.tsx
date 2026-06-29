@@ -13,11 +13,17 @@ import {
   X,
   Wrench,
   Package,
-  FileText
+  FileText,
+  Repeat,
+  DollarSign,
+  CalendarDays,
+  Search
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/lib/supabase";
+import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
+import { GlobalSearch } from "@/components/GlobalSearch";
 
 export default function AdminLayout({
   children,
@@ -27,15 +33,31 @@ export default function AdminLayout({
   const pathname = usePathname();
   const router = useRouter();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+
+  useKeyboardShortcuts();
+
+  useEffect(() => {
+    function handleOpenSearch() {
+      setIsSearchOpen(true);
+    }
+    window.addEventListener("open-global-search", handleOpenSearch);
+    return () => window.removeEventListener("open-global-search", handleOpenSearch);
+  }, []);
 
   const navItems = [
     { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
+    { label: "Calendario", href: "/admin/calendar", icon: CalendarDays },
     { label: "Disponibilidad", href: "/admin/availability", icon: Calendar },
     { label: "Servicios", href: "/admin/services", icon: Car },
     { label: "Vehículos", href: "/admin/vehicles", icon: Wrench },
     { label: "Órdenes", href: "/admin/work-orders", icon: FileText },
+    { label: "Recurrencias", href: "/admin/recurrences", icon: Repeat },
     { label: "Productos", href: "/admin/products", icon: Package },
+    { label: "Máquinas", href: "/admin/machines", icon: Settings },
+    { label: "Contabilidad", href: "/admin/accounting", icon: DollarSign },
     { label: "Clientes", href: "/admin/clients", icon: Users },
+    { label: "Usuarios", href: "/admin/users", icon: Users },
     { label: "Configuración", href: "/admin/settings", icon: Settings },
   ];
 
@@ -86,6 +108,14 @@ export default function AdminLayout({
 
           <div className="p-4 border-t border-white/5 flex-shrink-0">
             <button 
+              onClick={() => setIsSearchOpen(true)}
+              className="flex items-center gap-3 w-full px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl transition-all mb-2"
+            >
+              <Search className="w-5 h-5" />
+              Buscar
+              <span className="ml-auto text-xs text-gray-600">⌘K</span>
+            </button>
+            <button 
               onClick={handleLogout}
               className="flex items-center gap-3 w-full px-4 py-3 text-gray-400 hover:text-red-400 hover:bg-red-400/10 rounded-xl transition-all"
             >
@@ -108,6 +138,9 @@ export default function AdminLayout({
           onClick={() => setIsSidebarOpen(false)}
         />
       )}
+
+      {/* Global Search */}
+      <GlobalSearch isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
     </div>
   );
 }

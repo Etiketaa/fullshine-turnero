@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { supabase } from "@/lib/supabase";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
@@ -14,7 +14,8 @@ import {
   FileText,
   AlertTriangle,
   Clock,
-  CheckCircle2
+  CheckCircle2,
+  Download
 } from "lucide-react";
 import { cn, formatCurrency } from "@/lib/utils";
 
@@ -93,6 +94,41 @@ export default function AdminWorkOrders() {
   });
   const [selectedServiceId, setSelectedServiceId] = useState<string>("");
   const [editingWorkOrderId, setEditingWorkOrderId] = useState<string | null>(null);
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
+
+  const filteredWorkOrders = useMemo(() => {
+    return workOrders.filter((order) => {
+      const clientName = `${order.client?.first_name} ${order.client?.last_name}`.toLowerCase();
+      const vehicleInfo = `${order.vehicle?.brand} ${order.vehicle?.model}`.toLowerCase();
+      const search = searchTerm.toLowerCase();
+
+      if (search && !clientName.includes(search) && !vehicleInfo.includes(search)) {
+        return false;
+      }
+
+      if (statusFilter !== "all" && order.status !== statusFilter) {
+        return false;
+      }
+
+      const orderDate = new Date(order.created_at);
+      if (dateFrom && orderDate < new Date(dateFrom)) {
+        return false;
+      }
+      if (dateTo) {
+        const toDate = new Date(dateTo);
+        toDate.setHours(23, 59, 59, 999);
+        if (orderDate > toDate) {
+          return false;
+        }
+      }
+
+      return true;
+    });
+  }, [workOrders, searchTerm, statusFilter, dateFrom, dateTo]);
 
   useEffect(() => {
     fetchWorkOrders();
@@ -193,7 +229,6 @@ export default function AdminWorkOrders() {
       
       if (error) throw error;
       
-      // Update work order total
       await updateWorkOrderTotal(editingWorkOrderId);
       
       setIsItemModalOpen(false);
@@ -262,6 +297,132 @@ export default function AdminWorkOrders() {
     }
   }
 
+  function generateInvoice(order: WorkOrder) {
+    const shortId = order.id.slice(0, 8).toUpperCase();
+    const date = format(new Date(order.completed_at || order.created_at), "dd/MM/yyyy", { locale: es });
+    const items = order.items || [];
+    const servicesTable = items.map(item => `
+      <tr>
+        <td>${item.service?.name || "Servicio"}</td>
+        <td class="text-center">${item.quantity}</td>
+        <td class="text-right">${formatCurrency(item.unit_price)}</td>
+        <td class="text-right">${formatCurrency(item.subtotal)}</td>
+      </tr>
+    `).join("");
+
+    const html = `<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Factura - ${shortId}</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; padding: 40px; color: #333; }
+  .header { text-align: center; border-bottom: 3px solid #dc2626; padding-bottom: 20px; margin-bottom: 30px; }
+  .header h1 { font-size: 28px; color: #dc2626; margin-bottom: 4px; }
+  .header p { color: #666; font-size: 14px; }
+  .invoice-info { display: flex; justify-content: space-between; margin-bottom: 30px; }
+  .invoice-info div { font-size: 14px; }
+  .invoice-info strong { display: block; color: #666; margin-bottom: 2px; }
+  .client-info { margin-bottom: 30px; padding: 15px; background: #f9f9f9; border-radius: 8px; }
+  .client-info h3 { font-size: 14px; color: #666; margin-bottom: 8px; }
+  .client-info p { font-size: 15px; }
+  table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+  th { background: #dc2626; color: white; text-align: left; padding: 10px 12px; font-size: 13px; }
+  th:nth-child(2), td:nth-child(2) { text-align: center; }
+  th:nth-child(3), td:nth-child(3),
+  th:nth-child(4), td:nth-child(4) { text-align: right; }
+  td { padding: 10px 12px; border-bottom: 1px solid #eee; font-size: 14px; }
+  tr:nth-child(even) td { background: #fafafa; }
+  .total-section { text-align: right; margin-bottom: 40px; }
+  .total-section .total { font-size: 22px; font-weight: bold; color: #dc2626; border-top: 2px solid #333; padding-top: 10px; display: inline-block; }
+  .footer { text-align: center; color: #999; font-size: 13px; border-top: 1px solid #eee; padding-top: 20px; }
+  @media print {
+    body { padding: 0; }
+    .header { border-bottom-color: #dc2626 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    th { background: #dc2626 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    tr:nth-child(even) td { background: #fafafa !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+  <div class="header">
+    <h1>FullShine Detailing</h1>
+    <p>Servicio de Detailing Profesional</p>
+  </div>
+  <div class="invoice-info">
+    <div>
+      <strong>Factura N°</strong>
+      #${shortId}
+    </div>
+    <div>
+      <strong>Fecha</strong>
+      ${date}
+    </div>
+  </div>
+  <div class="client-info">
+    <h3>Cliente</h3>
+    <p><strong>${order.client?.first_name || ""} ${order.client?.last_name || ""}</strong></p>
+    ${order.vehicle ? `<p>${order.vehicle.brand} ${order.vehicle.model}</p>` : ""}
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>Servicio</th>
+        <th>Cant.</th>
+        <th>Precio Unit.</th>
+        <th>Subtotal</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${servicesTable}
+    </tbody>
+  </table>
+  <div class="total-section">
+    <div class="total">Total: ${formatCurrency(order.total)}</div>
+  </div>
+  <div class="footer">
+    <p>Gracias por su preferencia</p>
+  </div>
+</body>
+</html>`;
+
+    const printWindow = window.open("", "_blank");
+    if (printWindow) {
+      printWindow.document.write(html);
+      printWindow.document.close();
+      printWindow.focus();
+      printWindow.print();
+    }
+  }
+
+  function exportToCSV(data: WorkOrder[], filename: string) {
+    const headers = ["ID", "Cliente", "Vehículo", "Estado", "Total", "Fecha"];
+    const rows = data.map((order) => [
+      order.id,
+      `${order.client?.first_name || ""} ${order.client?.last_name || ""}`.trim(),
+      `${order.vehicle?.brand || ""} ${order.vehicle?.model || ""}`.trim(),
+      getStatusLabel(order.status),
+      order.total?.toString() || "0",
+      format(new Date(order.created_at), "dd/MM/yyyy"),
+    ]);
+
+    const csvContent = [headers, ...rows]
+      .map((row) => row.map((cell) => `"${cell}"`).join(","))
+      .join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  }
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case "pending": return "bg-yellow-500/10 text-yellow-500";
@@ -299,6 +460,53 @@ export default function AdminWorkOrders() {
           <Plus className="w-5 h-5" />
           Nueva Orden
         </button>
+        <button 
+          onClick={() => exportToCSV(filteredWorkOrders, `ordenes_trabajo_${format(new Date(), "yyyy-MM-dd")}.csv`)}
+          disabled={filteredWorkOrders.length === 0}
+          className="bg-white/5 border border-white/10 px-6 py-3 rounded-xl font-bold flex items-center gap-2 hover:bg-white/10 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <Download className="w-5 h-5" />
+          Exportar CSV
+        </button>
+      </div>
+
+      {/* Filters */}
+      <div className="flex flex-wrap items-center gap-4 p-4 bg-white/5 border border-white/5 rounded-2xl">
+        <div className="relative flex-1 min-w-[200px]">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+          <input
+            type="text"
+            placeholder="Buscar por cliente o vehículo..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full bg-black/40 border border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-sm focus:border-red-500 outline-none"
+          />
+        </div>
+        <select
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+          className="bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:border-red-500 outline-none"
+        >
+          <option value="all">Todos los estados</option>
+          <option value="pending">Pendientes</option>
+          <option value="in_progress">En Progreso</option>
+          <option value="completed">Completadas</option>
+        </select>
+        <div className="flex items-center gap-2">
+          <input
+            type="date"
+            value={dateFrom}
+            onChange={(e) => setDateFrom(e.target.value)}
+            className="bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:border-red-500 outline-none"
+          />
+          <span className="text-gray-500">-</span>
+          <input
+            type="date"
+            value={dateTo}
+            onChange={(e) => setDateTo(e.target.value)}
+            className="bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:border-red-500 outline-none"
+          />
+        </div>
       </div>
 
       {/* Work Orders List */}
@@ -307,8 +515,8 @@ export default function AdminWorkOrders() {
           Array(3).fill(0).map((_, i) => (
             <div key={i} className="h-32 bg-white/5 rounded-2xl animate-pulse" />
           ))
-        ) : workOrders.length > 0 ? (
-          workOrders.map((order) => (
+        ) : filteredWorkOrders.length > 0 ? (
+          filteredWorkOrders.map((order) => (
             <div key={order.id} className="p-6 bg-white/5 border border-white/5 rounded-2xl space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
@@ -388,6 +596,15 @@ export default function AdminWorkOrders() {
                       </button>
                     </>
                   )}
+                  {order.status === "completed" && (
+                    <button 
+                      onClick={() => generateInvoice(order)}
+                      className="px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-bold hover:bg-red-500 transition-all flex items-center gap-2"
+                    >
+                      <FileText className="w-4 h-4" />
+                      Generar Factura
+                    </button>
+                  )}
                 </div>
                 <button 
                   onClick={() => {
@@ -403,7 +620,7 @@ export default function AdminWorkOrders() {
           ))
         ) : (
           <div className="p-12 text-center text-gray-500 bg-white/5 rounded-2xl border border-dashed border-white/10">
-            No hay órdenes de trabajo creadas todavía.
+            {workOrders.length > 0 ? "No se encontraron órdenes con los filtros aplicados." : "No hay órdenes de trabajo creadas todavía."}
           </div>
         )}
       </div>

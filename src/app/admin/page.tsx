@@ -15,7 +15,10 @@ import {
   Car,
   Trash2,
   AlertTriangle,
-  FileText
+  FileText,
+  Package,
+  Wrench,
+  Star
 } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 
@@ -30,32 +33,108 @@ export default function AdminDashboard() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [appointmentToDelete, setAppointmentToDelete] = useState<any>(null);
 
+  const [topServices, setTopServices] = useState<{ name: string; count: number }[]>([]);
+  const [topClients, setTopClients] = useState<{ name: string; total: number }[]>([]);
+  const [workOrderStatuses, setWorkOrderStatuses] = useState({ pending: 0, in_progress: 0, completed: 0 });
+  const [lowStockProducts, setLowStockProducts] = useState<any[]>([]);
+
   useEffect(() => {
     fetchData();
   }, []);
 
   async function fetchData() {
-    const { data: appointments } = await supabase
-      .from("appointments")
-      .select(`
-        *,
-        client:clients(first_name, last_name, phone),
-        service:services(name, price)
-      `)
-      .order("date", { ascending: true })
-      .order("time", { ascending: true })
-      .limit(20);
+    const [appointmentsRes, clientCountRes, appCountRes, workOrdersRes, lowStockRes] = await Promise.all([
+      supabase
+        .from("appointments")
+        .select(`
+          *,
+          client:clients(first_name, last_name, phone),
+          service:services(name, price)
+        `)
+        .order("date", { ascending: true })
+        .order("time", { ascending: true })
+        .limit(20),
+      supabase.from("clients").select("*", { count: "exact", head: true }),
+      supabase.from("appointments").select("*", { count: "exact", head: true }),
+      supabase
+        .from("work_orders")
+        .select(`
+          id,
+          status,
+          total,
+          client_id,
+          client:clients(first_name, last_name),
+          items:work_order_items(
+            service_id,
+            quantity,
+            subtotal,
+            service:services(name)
+          )
+        `),
+      supabase
+        .from("products")
+        .select("id, name, stock, min_stock, category")
+        .eq("is_active", true)
+        .order("stock", { ascending: true }),
+    ]);
 
-    if (appointments) setUpcomingAppointments(appointments);
+    if (appointmentsRes.data) setUpcomingAppointments(appointmentsRes.data);
 
-    const { count: clientCount } = await supabase.from("clients").select("*", { count: "exact", head: true });
-    const { count: appCount } = await supabase.from("appointments").select("*", { count: "exact", head: true });
-    
+    const revenue = (workOrdersRes.data || [])
+      .filter((wo) => wo.status === "completed")
+      .reduce((sum, wo) => sum + (wo.total || 0), 0);
+
     setStats({
-      totalClients: clientCount || 0,
-      totalAppointments: appCount || 0,
-      revenue: 450000,
+      totalClients: clientCountRes.count || 0,
+      totalAppointments: appCountRes.count || 0,
+      revenue,
     });
+
+    // Work order statuses
+    const statuses = { pending: 0, in_progress: 0, completed: 0 };
+    (workOrdersRes.data || []).forEach((wo) => {
+      if (wo.status in statuses) statuses[wo.status as keyof typeof statuses]++;
+    });
+    setWorkOrderStatuses(statuses);
+
+    // Top services (from work_order_items)
+    const serviceCount: Record<string, { name: string; count: number }> = {};
+    (workOrdersRes.data || []).forEach((wo) => {
+      (wo.items || []).forEach((item: any) => {
+        const name = item.service?.name || "Desconocido";
+        if (!serviceCount[item.service_id]) {
+          serviceCount[item.service_id] = { name, count: 0 };
+        }
+        serviceCount[item.service_id].count += item.quantity || 1;
+      });
+    });
+    const sortedServices = Object.values(serviceCount)
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 5);
+    setTopServices(sortedServices);
+
+    // Top clients (by total spend)
+    const clientSpend: Record<string, { name: string; total: number }> = {};
+    (workOrdersRes.data || []).forEach((wo) => {
+      const client = Array.isArray(wo.client) ? wo.client[0] : wo.client;
+      if (wo.client_id && client) {
+        const name = `${client.first_name} ${client.last_name}`;
+        if (!clientSpend[wo.client_id]) {
+          clientSpend[wo.client_id] = { name, total: 0 };
+        }
+        clientSpend[wo.client_id].total += wo.total || 0;
+      }
+    });
+    const sortedClients = Object.values(clientSpend)
+      .sort((a, b) => b.total - a.total)
+      .slice(0, 5);
+    setTopClients(sortedClients);
+
+    // Low stock products
+    const lowStock = (lowStockRes.data || []).filter(
+      (p) => p.stock <= p.min_stock
+    );
+    setLowStockProducts(lowStock);
 
     setLoading(false);
   }
@@ -80,7 +159,7 @@ export default function AdminDashboard() {
   const statCards = [
     { label: "Turnos Totales", value: stats.totalAppointments, icon: CalendarIcon, color: "text-red-500" },
     { label: "Clientes", value: stats.totalClients, icon: Users, color: "text-blue-500" },
-    { label: "Ingresos Estimados", value: formatCurrency(stats.revenue), icon: TrendingUp, color: "text-green-500" },
+    { label: "Ingresos Totales", value: formatCurrency(stats.revenue), icon: TrendingUp, color: "text-green-500" },
   ];
 
   return (
@@ -112,6 +191,117 @@ export default function AdminDashboard() {
           </div>
         ))}
       </div>
+
+      {/* Workshop Status */}
+      <div className="grid sm:grid-cols-3 gap-6">
+        <div className="p-6 bg-yellow-500/5 border border-yellow-500/10 rounded-2xl space-y-2">
+          <div className="flex items-center gap-3">
+            <Clock className="w-5 h-5 text-yellow-500" />
+            <span className="text-sm text-gray-400 uppercase tracking-wider font-medium">Pendientes</span>
+          </div>
+          <div className="text-3xl font-bold text-yellow-500">{workOrderStatuses.pending}</div>
+        </div>
+        <div className="p-6 bg-blue-500/5 border border-blue-500/10 rounded-2xl space-y-2">
+          <div className="flex items-center gap-3">
+            <Wrench className="w-5 h-5 text-blue-500" />
+            <span className="text-sm text-gray-400 uppercase tracking-wider font-medium">En Progreso</span>
+          </div>
+          <div className="text-3xl font-bold text-blue-500">{workOrderStatuses.in_progress}</div>
+        </div>
+        <div className="p-6 bg-green-500/5 border border-green-500/10 rounded-2xl space-y-2">
+          <div className="flex items-center gap-3">
+            <CheckCircle2 className="w-5 h-5 text-green-500" />
+            <span className="text-sm text-gray-400 uppercase tracking-wider font-medium">Completadas</span>
+          </div>
+          <div className="text-3xl font-bold text-green-500">{workOrderStatuses.completed}</div>
+        </div>
+      </div>
+
+      {/* Reports Grid */}
+      <div className="grid lg:grid-cols-2 gap-8">
+        {/* Top Services */}
+        <div className="p-6 bg-white/5 border border-white/5 rounded-2xl space-y-5">
+          <div className="flex items-center gap-3">
+            <Star className="w-5 h-5 text-red-500" />
+            <h2 className="text-xl font-bold">Top 5 Servicios Populares</h2>
+          </div>
+          {loading ? (
+            <div className="space-y-3">
+              {Array(5).fill(0).map((_, i) => (
+                <div key={i} className="h-10 bg-white/5 rounded-xl animate-pulse" />
+              ))}
+            </div>
+          ) : topServices.length > 0 ? (
+            <div className="space-y-3">
+              {topServices.map((service, idx) => (
+                <div key={idx} className="flex items-center justify-between p-3 bg-white/[0.03] rounded-xl">
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm font-bold text-gray-500 w-5">{idx + 1}.</span>
+                    <span className="font-medium">{service.name}</span>
+                  </div>
+                  <span className="text-sm font-bold text-red-500">{service.count} {service.count === 1 ? "vez" : "veces"}</span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-gray-500 text-sm">No hay datos de servicios todavía.</p>
+          )}
+        </div>
+
+        {/* Top Clients */}
+        <div className="p-6 bg-white/5 border border-white/5 rounded-2xl space-y-5">
+          <div className="flex items-center gap-3">
+            <Users className="w-5 h-5 text-red-500" />
+            <h2 className="text-xl font-bold">Top 5 Mejores Clientes</h2>
+          </div>
+          {loading ? (
+            <div className="space-y-3">
+              {Array(5).fill(0).map((_, i) => (
+                <div key={i} className="h-10 bg-white/5 rounded-xl animate-pulse" />
+              ))}
+            </div>
+          ) : topClients.length > 0 ? (
+            <div className="space-y-3">
+              {topClients.map((client, idx) => (
+                <div key={idx} className="flex items-center justify-between p-3 bg-white/[0.03] rounded-xl">
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm font-bold text-gray-500 w-5">{idx + 1}.</span>
+                    <span className="font-medium">{client.name}</span>
+                  </div>
+                  <span className="text-sm font-bold text-green-500">{formatCurrency(client.total)}</span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-gray-500 text-sm">No hay datos de clientes todavía.</p>
+          )}
+        </div>
+      </div>
+
+      {/* Low Stock Alerts */}
+      {lowStockProducts.length > 0 && (
+        <div className="p-6 bg-yellow-500/5 border border-yellow-500/10 rounded-2xl space-y-5">
+          <div className="flex items-center gap-3">
+            <Package className="w-5 h-5 text-yellow-500" />
+            <h2 className="text-xl font-bold">Alertas de Stock Bajo</h2>
+          </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {lowStockProducts.map((product) => (
+              <div key={product.id} className="flex items-center justify-between p-3 bg-white/[0.03] rounded-xl">
+                <div>
+                  <div className="font-medium text-sm">{product.name}</div>
+                  {product.category && (
+                    <div className="text-xs text-gray-500">{product.category}</div>
+                  )}
+                </div>
+                <span className={`text-sm font-bold ${product.stock === 0 ? "text-red-500" : "text-yellow-500"}`}>
+                  {product.stock} / {product.min_stock}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Main Grid */}
       <div className="grid lg:grid-cols-3 gap-8">

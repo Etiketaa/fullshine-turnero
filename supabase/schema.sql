@@ -7,6 +7,7 @@ CREATE TABLE services (
   duration_minutes INTEGER NOT NULL,
   price DECIMAL(10, 2) NOT NULL,
   image_url TEXT,
+  tools_needed TEXT,
   is_active BOOLEAN DEFAULT true,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
@@ -108,6 +109,54 @@ CREATE TABLE blocks (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
+-- Create machines table (workshop equipment)
+CREATE TABLE machines (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  name TEXT NOT NULL,
+  brand TEXT,
+  model TEXT,
+  serial_number TEXT,
+  purchase_date DATE,
+  purchase_price DECIMAL(10, 2),
+  status TEXT DEFAULT 'active' CHECK (status IN ('active', 'maintenance', 'inactive')),
+  last_maintenance DATE,
+  next_maintenance DATE,
+  notes TEXT,
+  is_active BOOLEAN DEFAULT true,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- Create recurrences table (recurring appointments)
+CREATE TABLE recurrences (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  client_id UUID REFERENCES clients(id) ON DELETE CASCADE,
+  vehicle_id UUID REFERENCES vehicles(id) ON DELETE SET NULL,
+  service_id UUID REFERENCES services(id) ON DELETE SET NULL,
+  frequency TEXT NOT NULL CHECK (frequency IN ('daily', 'weekly', 'monthly')),
+  day_of_week INTEGER CHECK (day_of_week BETWEEN 0 AND 6),
+  day_of_month INTEGER CHECK (day_of_month BETWEEN 1 AND 31),
+  time TIME NOT NULL,
+  duration_minutes INTEGER,
+  start_date DATE,
+  end_date DATE,
+  is_active BOOLEAN DEFAULT true,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- Create transactions table (financial accounting)
+CREATE TABLE transactions (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  type TEXT NOT NULL CHECK (type IN ('income', 'expense')),
+  category TEXT NOT NULL,
+  description TEXT,
+  amount DECIMAL(10, 2) NOT NULL,
+  reference_id UUID,
+  reference_type TEXT,
+  date DATE NOT NULL DEFAULT CURRENT_DATE,
+  notes TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
 -- Enable Row Level Security (RLS)
 ALTER TABLE services ENABLE ROW LEVEL SECURITY;
 ALTER TABLE clients ENABLE ROW LEVEL SECURITY;
@@ -118,6 +167,9 @@ ALTER TABLE work_order_items ENABLE ROW LEVEL SECURITY;
 ALTER TABLE products ENABLE ROW LEVEL SECURITY;
 ALTER TABLE schedules ENABLE ROW LEVEL SECURITY;
 ALTER TABLE blocks ENABLE ROW LEVEL SECURITY;
+ALTER TABLE machines ENABLE ROW LEVEL SECURITY;
+ALTER TABLE recurrences ENABLE ROW LEVEL SECURITY;
+ALTER TABLE transactions ENABLE ROW LEVEL SECURITY;
 
 -- Policies for services
 CREATE POLICY "Public can read active services" ON services FOR SELECT USING (is_active = true);
@@ -157,6 +209,29 @@ CREATE POLICY "Anyone can manage work_order_items" ON work_order_items FOR ALL U
 
 -- Policies for products
 CREATE POLICY "Anyone can manage products" ON products FOR ALL USING (true) WITH CHECK (true);
+
+-- Policies for machines
+CREATE POLICY "Public can read active machines" ON machines FOR SELECT USING (is_active = true);
+CREATE POLICY "Authenticated can manage machines" ON machines FOR ALL USING (auth.role() = 'authenticated');
+
+-- Policies for recurrences
+CREATE POLICY "Authenticated can manage recurrences" ON recurrences FOR ALL USING (auth.role() = 'authenticated');
+
+-- Policies for transactions
+CREATE POLICY "Authenticated can manage transactions" ON transactions FOR ALL USING (auth.role() = 'authenticated');
+
+-- Create profiles table (linked to Supabase Auth users)
+CREATE TABLE profiles (
+  id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  email TEXT NOT NULL,
+  full_name TEXT NOT NULL,
+  role TEXT NOT NULL DEFAULT 'empleado' CHECK (role IN ('admin', 'gerente', 'empleado')),
+  is_active BOOLEAN DEFAULT true,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- Policies for profiles
+CREATE POLICY "Authenticated can manage profiles" ON profiles FOR ALL USING (auth.role() = 'authenticated');
 
 -- Seed Data - Servicios de Car Detailing
 INSERT INTO services (name, description, category, duration_minutes, price) VALUES

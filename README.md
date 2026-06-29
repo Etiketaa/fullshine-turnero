@@ -26,6 +26,7 @@ fullshine-detailing/
 │       └── hero.png              # Imagen del hero section
 ├── supabase/
 │   ├── schema.sql                # Schema completo de la BD
+│   ├── full-migration.sql        # Migración completa (máquinas, recurrencias, transacciones, profiles)
 │   ├── migration.sql             # Migración para tablas nuevas
 │   ├── security-migration.sql    # Políticas RLS seguras
 │   └── create-admin.sql          # Script para crear usuario admin
@@ -40,8 +41,8 @@ fullshine-detailing/
 │   │   ├── booking/
 │   │   │   └── page.tsx          # Flujo de reservas (3 pasos)
 │   │   └── admin/
-│   │       ├── layout.tsx        # Layout admin con sidebar
-│   │       ├── page.tsx          # Dashboard principal
+│   │       ├── layout.tsx        # Layout admin con sidebar + shortcuts
+│   │       ├── page.tsx          # Dashboard principal con reportes
 │   │       ├── login/
 │   │       │   └── page.tsx      # Login de administración
 │   │       ├── services/
@@ -49,19 +50,31 @@ fullshine-detailing/
 │   │       ├── vehicles/
 │   │       │   └── page.tsx      # CRUD de vehículos
 │   │       ├── work-orders/
-│   │       │   └── page.tsx      # Órdenes de trabajo
+│   │       │   └── page.tsx      # Órdenes de trabajo + facturas
 │   │       ├── products/
 │   │       │   └── page.tsx      # Inventario de productos
 │   │       ├── availability/
 │   │       │   └── page.tsx      # Gestión horarios + bloqueos
 │   │       ├── clients/
-│   │       │   └── page.tsx      # Base de clientes
+│   │       │   └── page.tsx      # Base de clientes (CRUD)
+│   │       ├── calendar/
+│   │       │   └── page.tsx      # Calendario mensual
+│   │       ├── recurrences/
+│   │       │   └── page.tsx      # Turnos recurrentes
+│   │       ├── machines/
+│   │       │   └── page.tsx      # Gestión de máquinas
+│   │       ├── accounting/
+│   │       │   └── page.tsx      # Contabilidad (ingresos/gastos)
+│   │       ├── users/
+│   │       │   └── page.tsx      # Gestión de usuarios con roles
 │   │       └── settings/
 │   │           └── page.tsx      # Configuración
 │   ├── components/
-│   │   └── AnimateOnScroll.tsx   # Componente de animación al scroll
+│   │   ├── AnimateOnScroll.tsx   # Componente de animación al scroll
+│   │   └── GlobalSearch.tsx      # Búsqueda global (Ctrl+K)
 │   ├── hooks/
-│   │   └── useInView.ts          # Hook para detectar elementos en viewport
+│   │   ├── useInView.ts          # Hook para detectar elementos en viewport
+│   │   └── useKeyboardShortcuts.ts # Atajos de teclado del admin
 │   ├── lib/
 │   │   ├── supabase.ts           # Cliente Supabase (browser + server)
 │   │   ├── emails.ts             # Servicio de emails via Resend
@@ -87,6 +100,10 @@ fullshine-detailing/
 | `products` | Inventario de productos |
 | `schedules` | Disponibilidad semanal |
 | `blocks` | Bloqueo de fechas específicas |
+| `machines` | Máquinas y equipos del taller |
+| `recurrences` | Turnos recurrentes (diario/semanal/mensual) |
+| `transactions` | Transacciones financieras (ingresos/gastos) |
+| `profiles` | Perfiles de usuario con roles (admin/gerente/empleado) |
 
 ### Políticas RLS
 
@@ -95,6 +112,7 @@ fullshine-detailing/
 - **Turnos**: Público puede insertar (booking), admin gestiona todo
 - **Vehículos**: Público puede leer/insertar, admin gestiona todo
 - **Órdenes, productos, schedules, blocks**: Solo usuarios autenticados
+- **Máquinas, recurrencias, transacciones, profiles**: Solo usuarios autenticados
 
 ## Funcionalidades
 
@@ -125,10 +143,13 @@ fullshine-detailing/
 - Redirect automático si ya está logueado
 
 #### Dashboard (`/admin`)
-- Estadísticas: turnos totales, clientes, ingresos estimados
+- Estadísticas reales: turnos, clientes, ingresos calculados de órdenes completadas
+- Top 5 servicios populares (por cantidad de órdenes)
+- Top 5 mejores clientes (por gasto total)
+- Estado del taller (pendiente/en progreso/completado)
+- Alertas de stock bajo
 - Lista de próximos turnos con info del cliente y servicio
 - Eliminación de turnos con confirmación
-- Acciones rápidas: Nueva orden, Gestionar servicios, Bloquear fecha
 
 #### Servicios (`/admin/services`)
 - CRUD completo (Crear, Leer, Actualizar, Eliminar)
@@ -148,6 +169,9 @@ fullshine-detailing/
 - Recálculo automático del total
 - Estados: Pendiente → En Progreso → Completada
 - Eliminación de ítems y órdenes
+- **Filtros**: búsqueda por cliente/vehículo, estado, rango de fechas
+- **Exportar CSV**: con filtros activos aplicados
+- **Generar Factura**: HTML imprimible para órdenes completadas
 
 #### Productos (`/admin/products`)
 - CRUD completo de inventario
@@ -156,9 +180,49 @@ fullshine-detailing/
 - Campos: nombre, marca, categoría, precio compra/venta, stock, unidad
 
 #### Clientes (`/admin/clients`)
-- Lista de clientes con búsqueda
+- CRUD completo con campos: nombre, apellido, email, teléfono, dirección, notas
+- Búsqueda por nombre, email o teléfono
 - Link directo a WhatsApp
-- Exportar CSV (UI presente)
+- Exportar CSV
+
+#### Calendario (`/admin/calendar`)
+- Vista mensual con cuadrícula de días
+- Preview de turnos en cada día
+- Modal con detalle del día y creación de turnos
+
+#### Recurrencias (`/admin/recurrences`)
+- CRUD de turnos recurrentes (diario/semanal/mensual)
+- Botón "Generar Turnos de Hoy" para crear citas pendientes
+- Frecuencia configurable (día de semana, día de mes)
+
+#### Máquinas (`/admin/machines`)
+- CRUD de equipos del taller
+- Estados: activa/mantenimiento/inactiva
+- Seguimiento de próximo mantenimiento
+- Alertas de mantenimiento próximo
+
+#### Contabilidad (`/admin/accounting`)
+- Registro de ingresos y gastos
+- Filtros por tipo y fecha
+- Resumen con totales
+- Exportar CSV
+
+#### Usuarios (`/admin/users`)
+- Gestión de usuarios con roles (admin/gerente/empleado)
+- Crear, editar, eliminar usuarios
+- Badge de rol con colores (admin=rojo, gerente=amarillo, empleado=verde)
+- Filtro por estado activo/inactivo
+- Exportar CSV
+
+#### Búsqueda Global (`Ctrl+K`)
+- Busca en clientes, servicios y productos
+- Resultados agrupados por categoría
+- Navegación directa al resultado seleccionado
+
+#### Atajos de Teclado
+- `Ctrl+1-9`: Navegación rápida a secciones del admin
+- `Ctrl+K`: Abrir búsqueda global
+- `Escape`: Cerrar modales
 
 #### Disponibilidad (`/admin/availability`)
 - Gestión de horarios por día de la semana
@@ -170,6 +234,7 @@ fullshine-detailing/
 - **RLS (Row Level Security)**: Políticas restrictivas en todas las tablas
 - **Supabase Auth**: Sesiones manejadas via cookies (no localStorage)
 - **Closure del admin**: Bloqueado por robots.txt
+- **Roles de usuario**: Soporte para admin/gerente/empleado via tabla profiles
 
 ## Variables de Entorno
 
@@ -207,7 +272,7 @@ cp .env.example .env.local
 ### 3. Configurar base de datos en Supabase
 Ejecutar en orden en el SQL Editor de Supabase:
 1. `supabase/schema.sql` (schema completo)
-2. `supabase/migration.sql` (tablas nuevas)
+2. `supabase/full-migration.sql` (tablas nuevas: machines, recurrences, transactions, profiles)
 3. `supabase/security-migration.sql` (políticas RLS seguras)
 
 ### 4. Crear usuario admin
@@ -215,6 +280,7 @@ Ejecutar en orden en el SQL Editor de Supabase:
 2. Email: `admin@fullshine.com` (o el que quieras)
 3. Contraseña: una contraseña segura
 4. Marcar **Auto Confirm User**
+5. Crear registro en tabla `profiles` con rol `admin`
 
 ### 5. Desarrollo
 ```bash
