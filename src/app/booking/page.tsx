@@ -8,7 +8,7 @@ import { es } from "date-fns/locale";
 import { supabase } from "@/lib/supabase";
 import { cn, formatCurrency } from "@/lib/utils";
 import { processBookingAction } from "@/app/actions";
-import { ChevronLeft, ChevronRight, Clock, Calendar as CalendarIcon, CheckCircle2, Car, AlertTriangle } from "lucide-react";
+import { ChevronLeft, ChevronRight, Clock, Calendar as CalendarIcon, CheckCircle2, Car, AlertTriangle, X } from "lucide-react";
 
 type Service = {
   id: string;
@@ -45,6 +45,8 @@ function BookingContent() {
   const [success, setSuccess] = useState(false);
   const [whatsappUrl, setWhatsappUrl] = useState("");
   const [duplicateWarning, setDuplicateWarning] = useState<string | null>(null);
+  const [serviceModalOpen, setServiceModalOpen] = useState(false);
+  const [selectedForModal, setSelectedForModal] = useState<Service | null>(null);
 
   // Fetch services
   useEffect(() => {
@@ -274,8 +276,8 @@ _Enviado desde el sistema de reservas de Fullshine Car Detailing_`;
                   <button
                     key={service.id}
                     onClick={() => {
-                      setSelectedService(service);
-                      setStep(2);
+                      setSelectedForModal(service);
+                      setServiceModalOpen(true);
                     }}
                     className={cn(
                       "text-left p-6 rounded-2xl border transition-all duration-300 group",
@@ -515,6 +517,62 @@ _Enviado desde el sistema de reservas de Fullshine Car Detailing_`;
           </div>
         )}
       </main>
+
+      {/* Service Info Modal */}
+      {serviceModalOpen && selectedForModal && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-6">
+          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setServiceModalOpen(false)} />
+          <div className="relative w-full max-w-lg bg-zinc-900 border border-white/10 rounded-2xl p-8 space-y-6 animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex justify-between items-start">
+              <span className="px-3 py-1 rounded-lg text-xs uppercase tracking-widest font-bold bg-red-500/20 text-red-500">
+                {selectedForModal.category}
+              </span>
+              <button onClick={() => setServiceModalOpen(false)} className="p-2 hover:bg-white/5 rounded-lg">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <h2 className="text-3xl font-bold tracking-tight">{selectedForModal.name}</h2>
+              <p className="text-gray-400 leading-relaxed">{selectedForModal.description}</p>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="p-4 bg-white/5 rounded-xl space-y-1">
+                <div className="text-xs uppercase tracking-widest text-gray-500 font-bold">Precio</div>
+                <div className="text-2xl font-bold text-red-500">{formatCurrency(selectedForModal.price)}</div>
+              </div>
+              <div className="p-4 bg-white/5 rounded-xl space-y-1">
+                <div className="text-xs uppercase tracking-widest text-gray-500 font-bold">Duración</div>
+                <div className="text-2xl font-bold flex items-center gap-2">
+                  <Clock className="w-5 h-5 text-red-500" />
+                  {selectedForModal.duration_minutes} min
+                </div>
+              </div>
+            </div>
+
+            <div className="flex gap-3 pt-4">
+              <button 
+                onClick={() => setServiceModalOpen(false)}
+                className="flex-1 py-4 bg-white/5 border border-white/10 text-gray-400 font-bold rounded-xl hover:bg-white/10 transition-all"
+              >
+                Volver
+              </button>
+              <button 
+                onClick={() => {
+                  setSelectedService(selectedForModal);
+                  setServiceModalOpen(false);
+                  setStep(2);
+                }}
+                className="flex-1 py-4 bg-red-600 text-white font-bold rounded-xl hover:bg-red-500 transition-all flex items-center justify-center gap-2"
+              >
+                Reservar
+                <ChevronRight className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
