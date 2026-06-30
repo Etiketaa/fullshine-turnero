@@ -164,66 +164,66 @@ export default function AdminDashboard() {
 
   return (
     <div className="space-y-10">
-      <div className="flex justify-between items-end">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-4">
         <div>
-          <h1 className="text-4xl font-bold tracking-tight">Bienvenido, Dueño</h1>
-          <p className="text-gray-400 mt-1">Acá tenés un resumen de lo que está pasando en Fullshine.</p>
+          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">Bienvenido, Dueño</h1>
+          <p className="text-gray-400 mt-1 text-sm sm:text-base">Acá tenés un resumen de lo que está pasando en Fullshine.</p>
         </div>
-        <div className="text-right">
-          <div className="text-sm font-medium text-red-500 uppercase tracking-widest">Hoy es</div>
-          <div className="text-lg font-bold">{format(new Date(), "eeee d 'de' MMMM", { locale: es })}</div>
+        <div className="sm:text-right">
+          <div className="text-xs sm:text-sm font-medium text-red-500 uppercase tracking-widest">Hoy es</div>
+          <div className="text-base sm:text-lg font-bold">{format(new Date(), "eeee d 'de' MMMM", { locale: es })}</div>
         </div>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid sm:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
         {statCards.map((stat) => (
-          <div key={stat.label} className="p-6 bg-white/5 border border-white/5 rounded-2xl space-y-4">
+          <div key={stat.label} className="p-4 sm:p-6 bg-white/5 border border-white/5 rounded-2xl space-y-3 sm:space-y-4">
             <div className="flex justify-between items-start">
               <div className={stat.color}>
-                <stat.icon className="w-8 h-8" />
+                <stat.icon className="w-7 h-7 sm:w-8 sm:h-8" />
               </div>
             </div>
             <div>
-              <div className="text-3xl font-bold">{stat.value}</div>
-              <div className="text-sm text-gray-500 font-medium uppercase tracking-wider">{stat.label}</div>
+              <div className="text-2xl sm:text-3xl font-bold">{stat.value}</div>
+              <div className="text-xs sm:text-sm text-gray-500 font-medium uppercase tracking-wider">{stat.label}</div>
             </div>
           </div>
         ))}
       </div>
 
       {/* Workshop Status */}
-      <div className="grid sm:grid-cols-3 gap-6">
-        <div className="p-6 bg-yellow-500/5 border border-yellow-500/10 rounded-2xl space-y-2">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+        <div className="p-4 sm:p-6 bg-yellow-500/5 border border-yellow-500/10 rounded-2xl space-y-2">
           <div className="flex items-center gap-3">
             <Clock className="w-5 h-5 text-yellow-500" />
-            <span className="text-sm text-gray-400 uppercase tracking-wider font-medium">Pendientes</span>
+            <span className="text-xs sm:text-sm text-gray-400 uppercase tracking-wider font-medium">Pendientes</span>
           </div>
-          <div className="text-3xl font-bold text-yellow-500">{workOrderStatuses.pending}</div>
+          <div className="text-2xl sm:text-3xl font-bold text-yellow-500">{workOrderStatuses.pending}</div>
         </div>
-        <div className="p-6 bg-blue-500/5 border border-blue-500/10 rounded-2xl space-y-2">
+        <div className="p-4 sm:p-6 bg-blue-500/5 border border-blue-500/10 rounded-2xl space-y-2">
           <div className="flex items-center gap-3">
             <Wrench className="w-5 h-5 text-blue-500" />
-            <span className="text-sm text-gray-400 uppercase tracking-wider font-medium">En Progreso</span>
+            <span className="text-xs sm:text-sm text-gray-400 uppercase tracking-wider font-medium">En Progreso</span>
           </div>
-          <div className="text-3xl font-bold text-blue-500">{workOrderStatuses.in_progress}</div>
+          <div className="text-2xl sm:text-3xl font-bold text-blue-500">{workOrderStatuses.in_progress}</div>
         </div>
-        <div className="p-6 bg-green-500/5 border border-green-500/10 rounded-2xl space-y-2">
+        <div className="p-4 sm:p-6 bg-green-500/5 border border-green-500/10 rounded-2xl space-y-2">
           <div className="flex items-center gap-3">
             <CheckCircle2 className="w-5 h-5 text-green-500" />
-            <span className="text-sm text-gray-400 uppercase tracking-wider font-medium">Completadas</span>
+            <span className="text-xs sm:text-sm text-gray-400 uppercase tracking-wider font-medium">Completadas</span>
           </div>
-          <div className="text-3xl font-bold text-green-500">{workOrderStatuses.completed}</div>
+          <div className="text-2xl sm:text-3xl font-bold text-green-500">{workOrderStatuses.completed}</div>
         </div>
       </div>
 
       {/* Reports Grid */}
-      <div className="grid lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
         {/* Top Services */}
-        <div className="p-6 bg-white/5 border border-white/5 rounded-2xl space-y-5">
+        <div className="p-4 sm:p-6 bg-white/5 border border-white/5 rounded-2xl space-y-4 sm:space-y-5">
           <div className="flex items-center gap-3">
             <Star className="w-5 h-5 text-red-500" />
-            <h2 className="text-xl font-bold">Top 5 Servicios Populares</h2>
+            <h2 className="text-lg sm:text-xl font-bold">Top 5 Servicios Populares</h2>
           </div>
           {loading ? (
             <div className="space-y-3">
@@ -249,10 +249,10 @@ export default function AdminDashboard() {
         </div>
 
         {/* Top Clients */}
-        <div className="p-6 bg-white/5 border border-white/5 rounded-2xl space-y-5">
+        <div className="p-4 sm:p-6 bg-white/5 border border-white/5 rounded-2xl space-y-4 sm:space-y-5">
           <div className="flex items-center gap-3">
             <Users className="w-5 h-5 text-red-500" />
-            <h2 className="text-xl font-bold">Top 5 Mejores Clientes</h2>
+            <h2 className="text-lg sm:text-xl font-bold">Top 5 Mejores Clientes</h2>
           </div>
           {loading ? (
             <div className="space-y-3">
@@ -280,12 +280,12 @@ export default function AdminDashboard() {
 
       {/* Low Stock Alerts */}
       {lowStockProducts.length > 0 && (
-        <div className="p-6 bg-yellow-500/5 border border-yellow-500/10 rounded-2xl space-y-5">
+        <div className="p-4 sm:p-6 bg-yellow-500/5 border border-yellow-500/10 rounded-2xl space-y-4 sm:space-y-5">
           <div className="flex items-center gap-3">
             <Package className="w-5 h-5 text-yellow-500" />
-            <h2 className="text-xl font-bold">Alertas de Stock Bajo</h2>
+            <h2 className="text-lg sm:text-xl font-bold">Alertas de Stock Bajo</h2>
           </div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {lowStockProducts.map((product) => (
               <div key={product.id} className="flex items-center justify-between p-3 bg-white/[0.03] rounded-xl">
                 <div>
@@ -294,7 +294,7 @@ export default function AdminDashboard() {
                     <div className="text-xs text-gray-500">{product.category}</div>
                   )}
                 </div>
-                <span className={`text-sm font-bold ${product.stock === 0 ? "text-red-500" : "text-yellow-500"}`}>
+                <span className={`text-sm font-bold whitespace-nowrap ${product.stock === 0 ? "text-red-500" : "text-yellow-500"}`}>
                   {product.stock} / {product.min_stock}
                 </span>
               </div>
@@ -304,11 +304,11 @@ export default function AdminDashboard() {
       )}
 
       {/* Main Grid */}
-      <div className="grid lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
         {/* Upcoming Appointments */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="lg:col-span-2 space-y-4 sm:space-y-6">
           <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-bold">Próximos Turnos</h2>
+            <h2 className="text-xl sm:text-2xl font-bold">Próximos Turnos</h2>
           </div>
 
           <div className="space-y-3">
@@ -318,41 +318,45 @@ export default function AdminDashboard() {
               ))
             ) : upcomingAppointments.length > 0 ? (
               upcomingAppointments.map((app) => (
-                <div key={app.id} className="p-5 bg-white/5 border border-white/5 rounded-2xl flex items-center gap-6 group hover:bg-white/[0.08] transition-all">
-                  <div className="flex flex-col items-center justify-center h-14 w-14 bg-red-600/10 text-red-500 rounded-xl font-bold">
-                    <span className="text-[10px] uppercase">{format(new Date(app.date), "EEE", { locale: es })}</span>
-                    <span className="text-xl leading-none">{format(new Date(app.date), "d")}</span>
-                  </div>
-                  
-                  <div className="flex-1">
-                    <div className="font-bold text-lg">{app.client.first_name} {app.client.last_name}</div>
-                    <div className="text-sm text-gray-400 flex items-center gap-2">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-red-500" />
-                      {app.service.name}
+                <div key={app.id} className="p-3 sm:p-5 bg-white/5 border border-white/5 rounded-2xl flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6 group hover:bg-white/[0.08] transition-all">
+                  <div className="flex items-center gap-3 sm:contents">
+                    <div className="flex flex-col items-center justify-center h-12 w-12 sm:h-14 sm:w-14 bg-red-600/10 text-red-500 rounded-xl font-bold flex-shrink-0">
+                      <span className="text-[10px] uppercase">{format(new Date(app.date), "EEE", { locale: es })}</span>
+                      <span className="text-lg sm:text-xl leading-none">{format(new Date(app.date), "d")}</span>
+                    </div>
+                    
+                    <div className="flex-1 min-w-0">
+                      <div className="font-bold text-base sm:text-lg truncate">{app.client.first_name} {app.client.last_name}</div>
+                      <div className="text-xs sm:text-sm text-gray-400 flex items-center gap-2">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-red-500 flex-shrink-0" />
+                        <span className="truncate">{app.service.name}</span>
+                      </div>
                     </div>
                   </div>
 
-                  <div className="text-right">
-                    <div className="font-bold text-xl flex items-center gap-2">
-                      <Clock className="w-5 h-5 text-gray-500" />
-                      {app.time.slice(0, 5)}
+                  <div className="flex items-center justify-between sm:justify-end sm:gap-6 sm:w-auto">
+                    <div className="sm:text-right">
+                      <div className="font-bold text-base sm:text-xl flex items-center gap-2">
+                        <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500" />
+                        {app.time.slice(0, 5)}
+                      </div>
+                      <div className="text-[10px] sm:text-xs text-gray-500 uppercase font-bold tracking-widest">{app.client.phone}</div>
                     </div>
-                    <div className="text-xs text-gray-500 uppercase font-bold tracking-widest">{app.client.phone}</div>
-                  </div>
 
-                  <button 
-                    onClick={() => {
-                      setAppointmentToDelete(app);
-                      setIsDeleteModalOpen(true);
-                    }}
-                    className="p-2 hover:bg-red-500/10 rounded-lg text-gray-500 hover:text-red-500 transition-all opacity-0 group-hover:opacity-100"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
+                    <button 
+                      onClick={() => {
+                        setAppointmentToDelete(app);
+                        setIsDeleteModalOpen(true);
+                      }}
+                      className="p-2 hover:bg-red-500/10 rounded-lg text-gray-500 hover:text-red-500 transition-all sm:opacity-0 sm:group-hover:opacity-100"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
               ))
             ) : (
-              <div className="p-12 text-center text-gray-500 bg-white/5 rounded-2xl border border-dashed border-white/10">
+              <div className="p-8 sm:p-12 text-center text-gray-500 bg-white/5 rounded-2xl border border-dashed border-white/10">
                 No hay turnos próximos programados.
               </div>
             )}
@@ -360,35 +364,35 @@ export default function AdminDashboard() {
         </div>
 
         {/* Quick Actions */}
-        <div className="space-y-6">
-          <h2 className="text-2xl font-bold">Acciones Rápidas</h2>
-          <div className="grid gap-3">
+        <div className="space-y-4 sm:space-y-6">
+          <h2 className="text-xl sm:text-2xl font-bold">Acciones Rápidas</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-3">
             <Link 
               href="/admin/work-orders"
               className="p-4 bg-red-600 text-white font-bold rounded-xl hover:bg-red-500 transition-all text-left flex items-center justify-between"
             >
               Nueva Orden de Trabajo
-              <FileText className="w-5 h-5" />
+              <FileText className="w-5 h-5 flex-shrink-0" />
             </Link>
             <Link 
               href="/admin/services"
               className="p-4 bg-white/5 border border-white/10 hover:border-red-500/50 rounded-xl transition-all text-left flex items-center justify-between"
             >
               Gestionar Servicios
-              <Car className="w-5 h-5 text-red-500" />
+              <Car className="w-5 h-5 text-red-500 flex-shrink-0" />
             </Link>
             <Link 
               href="/admin/availability"
               className="p-4 bg-white/5 border border-white/10 hover:border-red-500/50 rounded-xl transition-all text-left flex items-center justify-between"
             >
               Bloquear Fecha
-              <X className="w-5 h-5 text-red-500" />
+              <X className="w-5 h-5 text-red-500 flex-shrink-0" />
             </Link>
           </div>
 
-          <div className="p-6 bg-red-600/5 border border-red-600/10 rounded-2xl">
+          <div className="p-4 sm:p-6 bg-red-600/5 border border-red-600/10 rounded-2xl">
             <h3 className="font-bold text-red-500 mb-2 uppercase tracking-widest text-xs">Tip del día</h3>
-            <p className="text-sm text-gray-400">Recordá confirmar los turnos de mañana para reducir el ausentismo.</p>
+            <p className="text-xs sm:text-sm text-gray-400">Recordá confirmar los turnos de mañana para reducir el ausentismo.</p>
           </div>
         </div>
       </div>
@@ -397,27 +401,27 @@ export default function AdminDashboard() {
       {isDeleteModalOpen && appointmentToDelete && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center">
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsDeleteModalOpen(false)} />
-          <div className="relative w-full max-w-md bg-zinc-900 border border-white/10 rounded-2xl p-8 space-y-6">
+          <div className="relative w-full max-w-md mx-4 bg-zinc-900 border border-white/10 rounded-2xl p-6 sm:p-8 space-y-5 sm:space-y-6">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-red-500/10 rounded-xl">
                 <AlertTriangle className="w-6 h-6 text-red-500" />
               </div>
-              <h3 className="text-xl font-bold">Eliminar Turno</h3>
+              <h3 className="text-lg sm:text-xl font-bold">Eliminar Turno</h3>
             </div>
-            <p className="text-gray-400">
+            <p className="text-gray-400 text-sm sm:text-base">
               ¿Estás seguro de que deseas eliminar el turno de <span className="text-white font-bold">{appointmentToDelete.client.first_name} {appointmentToDelete.client.last_name}</span> 
               {" "}para el <span className="text-white font-bold">{format(new Date(appointmentToDelete.date), "eeee d 'de' MMMM", { locale: es })}</span>?
             </p>
             <div className="flex gap-3">
               <button 
                 onClick={() => setIsDeleteModalOpen(false)}
-                className="flex-1 py-3 bg-white/5 border border-white/10 rounded-xl font-bold hover:bg-white/10 transition-all"
+                className="flex-1 py-3 bg-white/5 border border-white/10 rounded-xl font-bold hover:bg-white/10 transition-all text-sm sm:text-base"
               >
                 Cancelar
               </button>
               <button 
                 onClick={handleDeleteAppointment}
-                className="flex-1 py-3 bg-red-600 text-white rounded-xl font-bold hover:bg-red-500 transition-all"
+                className="flex-1 py-3 bg-red-600 text-white rounded-xl font-bold hover:bg-red-500 transition-all text-sm sm:text-base"
               >
                 Eliminar
               </button>
