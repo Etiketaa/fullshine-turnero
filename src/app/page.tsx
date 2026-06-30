@@ -392,12 +392,16 @@ export default function Home() {
                 <div className="border-t border-[var(--border)] pt-6">
                   <div className="w-10 h-10 rounded-full border border-[var(--red)] flex items-center justify-center text-[var(--red-2)] mb-5">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-                      <circle cx="12" cy="12" r="9" />
-                      <path d="M12 7v5l3 3" />
+                      <circle cx="12" cy="12" r="3"/>
+                      <circle cx="12" cy="12" r="9"/>
+                      <line x1="12" y1="1" x2="12" y2="4"/>
+                      <line x1="12" y1="20" x2="12" y2="23"/>
+                      <line x1="1" y1="12" x2="4" y2="12"/>
+                      <line x1="20" y1="12" x2="23" y2="12"/>
                     </svg>
                   </div>
-                  <h3 className="text-lg font-medium normal-case font-[var(--font-inter)] mb-2">Rápido y eficiente</h3>
-                  <p className="text-sm text-[var(--text-dim)]">Turnos flexibles y tiempos optimizados para tu comodidad.</p>
+                  <h3 className="text-lg font-medium normal-case font-[var(--font-inter)] mb-2">Atención al detalle</h3>
+                  <p className="text-sm text-[var(--text-dim)]">Le dedicamos el tiempo necesario a cada vehículo para un resultado impecable.</p>
                 </div>
               </AnimateOnScroll>
 
