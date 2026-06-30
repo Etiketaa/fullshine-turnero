@@ -7,12 +7,18 @@
   --surface: #1a1816;
   --surface-2: #211e1a;
   --border: #2a2724;
-  --gold: #c9a227;
-  --gold-2: #f0d484;
   --red: #c81e1e;
   --red-2: #e23434;
+  --red-3: #ff4444;
+  --silver: #A8A9AD;
+  --silver-2: #D4D4D4;
+  --silver-3: #E8E8E8;
   --text-dim: #a39d92;
   --text-faint: #6b665e;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 @theme inline {
@@ -21,10 +27,9 @@
   --font-sans: var(--font-inter);
   --font-display: var(--font-oswald);
 
-  --color-gold: #c9a227;
-  --color-gold-2: #f0d484;
   --color-brand-red: #c81e1e;
   --color-brand-red-2: #e23434;
+  --color-brand-red-3: #ff4444;
 
   --color-red-50: #fef2f2;
   --color-red-100: #fee2e2;
@@ -39,10 +44,6 @@
   --color-red-950: #450a0a;
 }
 
-html {
-  scroll-behavior: smooth;
-}
-
 body {
   background: var(--background);
   color: var(--foreground);
@@ -50,6 +51,6 @@ body {
 }
 
 ::selection {
-  background: var(--gold);
-  color: var(--background);
+  background: var(--red);
+  color: var(--foreground);
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState, useEffect, useCallback } from "react";
 import { MessageCircle, ArrowRight, ChevronDown, X } from "lucide-react";
 import { AnimateOnScroll } from "@/components/AnimateOnScroll";
@@ -117,6 +118,8 @@ const categories: Category[] = [
   },
 ];
 
+const ctaClasses = "inline-flex items-center gap-2 px-7 py-3.5 text-[13px] font-medium tracking-[0.06em] uppercase rounded-[2px] bg-gradient-to-br from-[var(--silver)] via-[var(--silver-2)] to-[var(--silver-3)] text-[#1a1a1a] hover:shadow-[0_4px_24px_rgba(200,200,200,0.3)] hover:-translate-y-px transition-all duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)] whitespace-nowrap";
+
 export default function Home() {
   const [scrolled, setScrolled] = useState(false);
   const [openCategory, setOpenCategory] = useState<string | null>(null);
@@ -163,25 +166,23 @@ export default function Home() {
             : "py-5 md:py-6 bg-gradient-to-b from-[rgba(12,12,12,0.9)] to-transparent border-b border-transparent"
         }`}
       >
-        <Link href="/" className="flex items-center gap-1 group">
-          <span className="inline-flex items-center justify-center w-9 h-9 rounded-[2px] bg-gradient-to-br from-[var(--gold)] to-[var(--gold-2)] text-[#1a1407] font-[var(--font-oswald)] text-sm font-bold tracking-wider">
-            FS
-          </span>
-          <span className="font-[var(--font-oswald)] text-xl font-semibold tracking-[0.12em] text-[var(--gold-2)] group-hover:opacity-80 transition-opacity">
-            FULL<span className="text-[var(--foreground)]">SHINE</span>
-          </span>
+        <Link href="/" className="flex items-center gap-2 group">
+          <Image
+            src="/img/logo.svg"
+            alt="Fullshine Car Detailing"
+            width={44}
+            height={44}
+            className="group-hover:opacity-80 transition-opacity duration-500"
+          />
         </Link>
         <div className="hidden md:flex items-center gap-9">
-          <a href="#servicios" className="text-[13px] tracking-[0.08em] uppercase text-[var(--text-dim)] hover:text-[var(--gold-2)] transition-colors duration-500 ease-out relative after:content-[''] after:absolute after:left-0 after:bottom-[-6px] after:w-0 after:h-px after:bg-[var(--gold)] after:transition-[width] after:duration-500 after:ease-[cubic-bezier(0.25,0.1,0.25,1)] hover:after:w-full">
+          <a href="#servicios" className="text-[13px] tracking-[0.08em] uppercase text-[var(--text-dim)] hover:text-[var(--red-2)] transition-colors duration-500 ease-out relative after:content-[''] after:absolute after:left-0 after:bottom-[-6px] after:w-0 after:h-px after:bg-[var(--red)] after:transition-[width] after:duration-500 after:ease-[cubic-bezier(0.25,0.1,0.25,1)] hover:after:w-full">
             Servicios
           </a>
-          <a href="#nosotros" className="text-[13px] tracking-[0.08em] uppercase text-[var(--text-dim)] hover:text-[var(--gold-2)] transition-colors duration-500 ease-out relative after:content-[''] after:absolute after:left-0 after:bottom-[-6px] after:w-0 after:h-px after:bg-[var(--gold)] after:transition-[width] after:duration-500 after:ease-[cubic-bezier(0.25,0.1,0.25,1)] hover:after:w-full">
+          <a href="#nosotros" className="text-[13px] tracking-[0.08em] uppercase text-[var(--text-dim)] hover:text-[var(--red-2)] transition-colors duration-500 ease-out relative after:content-[''] after:absolute after:left-0 after:bottom-[-6px] after:w-0 after:h-px after:bg-[var(--red)] after:transition-[width] after:duration-500 after:ease-[cubic-bezier(0.25,0.1,0.25,1)] hover:after:w-full">
             Por qué elegirnos
           </a>
-          <Link
-            href="/booking"
-            className="inline-flex items-center gap-2 px-6 py-3 text-[13px] font-medium tracking-[0.06em] uppercase rounded-[2px] bg-gradient-to-br from-[var(--gold)] to-[var(--gold-2)] text-[#1a1407] hover:shadow-[0_4px_24px_rgba(201,162,39,0.35)] hover:-translate-y-px transition-all duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)] whitespace-nowrap"
-          >
+          <Link href="/booking" className={ctaClasses}>
             Reservar turno
           </Link>
         </div>
@@ -189,7 +190,7 @@ export default function Home() {
 
       <main className="flex-grow">
         {/* Hero Section */}
-        <section id="hero" className="relative min-h-screen flex items-center bg-[length:cover] bg-[radial-gradient(ellipse_at_70%_30%,rgba(201,162,39,0.08),transparent_60%)]">
+        <section id="hero" className="relative min-h-screen flex items-center bg-[length:cover] bg-[radial-gradient(ellipse_at_70%_30%,rgba(200,30,30,0.06),transparent_60%)]">
           <div
             className="absolute inset-0 opacity-40 z-0"
             style={{
@@ -202,7 +203,7 @@ export default function Home() {
 
           <div className="relative z-10 w-full max-w-[1180px] mx-auto px-6 md:px-8 pt-20">
             <AnimateOnScroll animation="fadeLeft">
-              <span className="inline-flex items-center gap-2.5 text-xs tracking-[0.18em] uppercase text-[var(--gold-2)] mb-6 before:content-[''] before:w-6 before:h-px before:bg-[var(--gold)]">
+              <span className="inline-flex items-center gap-2.5 text-xs tracking-[0.18em] uppercase text-[var(--red-2)] mb-6 before:content-[''] before:w-6 before:h-px before:bg-[var(--red)]">
                 Car detailing · Bahía Blanca
               </span>
             </AnimateOnScroll>
@@ -210,7 +211,7 @@ export default function Home() {
             <AnimateOnScroll animation="fadeLeft" delay={100}>
               <h1 className="font-[var(--font-oswald)] text-[clamp(48px,9vw,108px)] font-semibold leading-[0.95] uppercase max-w-[900px] tracking-[0.01em]">
                 Tu auto,<br />
-                <span className="relative inline-block bg-[length:300%_100%] bg-[linear-gradient(110deg,var(--foreground)_30%,var(--gold-2)_45%,var(--gold)_50%,var(--foreground)_65%)] [-webkit-background-clip:text] [background-clip:text] text-transparent animate-[sweep_4.5s_ease-in-out_0.6s_infinite]">
+                <span className="relative inline-block bg-[length:300%_100%] bg-[linear-gradient(110deg,var(--foreground)_30%,var(--silver-2)_45%,var(--silver)_50%,var(--foreground)_65%)] [-webkit-background-clip:text] [background-clip:text] text-transparent animate-[sweep_4.5s_ease-in-out_0.6s_infinite]">
                   reinventado.
                 </span>
               </h1>
@@ -224,17 +225,14 @@ export default function Home() {
 
             <AnimateOnScroll animation="fadeLeft" delay={300}>
               <div className="flex flex-wrap gap-4 mt-10">
-                <Link
-                  href="/booking"
-                  className="inline-flex items-center gap-2 px-7 py-3.5 text-[13px] font-medium tracking-[0.06em] uppercase rounded-[2px] bg-gradient-to-br from-[var(--gold)] to-[var(--gold-2)] text-[#1a1407] hover:shadow-[0_4px_24px_rgba(201,162,39,0.35)] hover:-translate-y-px transition-all duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)] whitespace-nowrap"
-                >
+                <Link href="/booking" className={ctaClasses}>
                   Reservar turno
                 </Link>
                 <a
                   href="https://wa.me/5492915275183"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-7 py-3.5 text-[13px] font-medium tracking-[0.06em] uppercase rounded-[2px] border border-[var(--border)] text-[var(--foreground)] bg-[rgba(255,255,255,0.02)] hover:border-[var(--gold)] hover:text-[var(--gold-2)] transition-all duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)] whitespace-nowrap"
+                  className="inline-flex items-center gap-2 px-7 py-3.5 text-[13px] font-medium tracking-[0.06em] uppercase rounded-[2px] border border-[var(--border)] text-[var(--foreground)] bg-[rgba(255,255,255,0.02)] hover:border-[var(--red)] hover:text-[var(--red-2)] transition-all duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)] whitespace-nowrap"
                 >
                   Hablar por WhatsApp
                 </a>
@@ -244,15 +242,15 @@ export default function Home() {
             <AnimateOnScroll animation="fadeUp" delay={400}>
               <div className="flex gap-0 mt-20 border-t border-[var(--border)] pt-8 max-w-[620px] flex-wrap">
                 <div className="pr-12 mr-12 border-r border-[var(--border)]">
-                  <div className="font-[var(--font-oswald)] text-[34px] font-semibold text-[var(--gold-2)]">+5</div>
+                  <div className="font-[var(--font-oswald)] text-[34px] font-semibold text-[var(--red-2)]">+5</div>
                   <div className="text-xs text-[var(--text-faint)] uppercase tracking-[0.08em] mt-1">Años de experiencia</div>
                 </div>
                 <div className="pr-12 mr-12 border-r border-[var(--border)]">
-                  <div className="font-[var(--font-oswald)] text-[34px] font-semibold text-[var(--gold-2)]">100%</div>
+                  <div className="font-[var(--font-oswald)] text-[34px] font-semibold text-[var(--red-2)]">100%</div>
                   <div className="text-xs text-[var(--text-faint)] uppercase tracking-[0.08em] mt-1">Satisfacción garantizada</div>
                 </div>
                 <div>
-                  <div className="font-[var(--font-oswald)] text-[34px] font-semibold text-[var(--gold-2)]">Premium</div>
+                  <div className="font-[var(--font-oswald)] text-[34px] font-semibold text-[var(--red-2)]">Premium</div>
                   <div className="text-xs text-[var(--text-faint)] uppercase tracking-[0.08em] mt-1">Productos certificados</div>
                 </div>
               </div>
@@ -265,7 +263,7 @@ export default function Home() {
           <div className="max-w-[1180px] mx-auto px-6 md:px-8">
             <AnimateOnScroll>
               <div className="mb-16 max-w-[560px]">
-                <span className="text-xs tracking-[0.18em] uppercase text-[var(--gold)] mb-3.5 block">Lo que hacemos</span>
+                <span className="text-xs tracking-[0.18em] uppercase text-[var(--red)] mb-3.5 block">Lo que hacemos</span>
                 <h2 className="font-[var(--font-oswald)] text-[clamp(32px,4vw,48px)] font-semibold uppercase tracking-[0.01em]">
                   Nuestros servicios
                 </h2>
@@ -283,7 +281,7 @@ export default function Home() {
                     {/* Category Header */}
                     <button
                       onClick={() => toggleCategory(cat.id)}
-                      className="w-full flex items-center justify-between p-6 md:p-8 text-left group hover:bg-[var(--surface-2)] transition-colors"
+                      className="w-full flex items-center justify-between p-6 md:p-8 text-left group hover:bg-[var(--surface-2)] transition-colors duration-300"
                     >
                       <div className="flex items-center gap-5">
                         <span className="font-[var(--font-oswald)] text-[13px] text-[var(--text-faint)] tracking-[0.1em]">
@@ -297,7 +295,7 @@ export default function Home() {
                         </div>
                       </div>
                       <ChevronDown
-                        className={`w-5 h-5 text-[var(--gold-2)] transition-transform duration-300 flex-shrink-0 ${
+                        className={`w-5 h-5 text-[var(--red-2)] transition-transform duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)] flex-shrink-0 ${
                           openCategory === cat.id ? "rotate-180" : ""
                         }`}
                       />
@@ -305,7 +303,7 @@ export default function Home() {
 
                     {/* Category Content (Accordion) */}
                     <div
-                      className="overflow-hidden transition-all duration-500 ease-in-out"
+                      className="overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)]"
                       style={{
                         maxHeight: openCategory === cat.id ? `${cat.services.length * 100 + 100}px` : "0px",
                       }}
@@ -317,17 +315,17 @@ export default function Home() {
                               <button
                                 key={service.id}
                                 onClick={() => openModal(service)}
-                                className="flex items-start gap-4 p-4 rounded-lg text-left bg-[var(--bg)] border border-transparent hover:border-[var(--gold)]/20 transition-all group"
+                                className="flex items-start gap-4 p-4 rounded-lg text-left bg-[var(--bg)] border border-transparent hover:border-[var(--red)]/20 transition-all duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)] group"
                               >
                                 <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 bg-[var(--surface-2)]">
                                   <img
                                     src={service.image}
                                     alt={service.name}
-                                    className="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-opacity"
+                                    className="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-opacity duration-500"
                                   />
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                  <div className="font-medium text-sm group-hover:text-[var(--gold-2)] transition-colors">
+                                  <div className="font-medium text-sm group-hover:text-[var(--red-2)] transition-colors duration-500">
                                     {service.name}
                                   </div>
                                   <p className="text-xs text-[var(--text-dim)] mt-1 line-clamp-2">
@@ -336,14 +334,14 @@ export default function Home() {
                                   {service.variants && (
                                     <div className="flex gap-2 mt-2">
                                       {service.variants.map((v) => (
-                                        <span key={v.name} className="text-[10px] px-2 py-0.5 rounded-full bg-[var(--gold)]/10 text-[var(--gold-2)] border border-[var(--gold)]/20">
+                                        <span key={v.name} className="text-[10px] px-2 py-0.5 rounded-full bg-[var(--red)]/10 text-[var(--red-2)] border border-[var(--red)]/20">
                                           {v.name}
                                         </span>
                                       ))}
                                     </div>
                                   )}
                                 </div>
-                                <ArrowRight className="w-4 h-4 text-[var(--text-faint)] group-hover:text-[var(--gold-2)] transition-colors mt-1 flex-shrink-0 group-hover:translate-x-1 transition-transform" />
+                                <ArrowRight className="w-4 h-4 text-[var(--text-faint)] group-hover:text-[var(--red-2)] transition-all duration-500 mt-1 flex-shrink-0 group-hover:translate-x-1" />
                               </button>
                             ))}
                           </div>
@@ -362,7 +360,7 @@ export default function Home() {
           <div className="max-w-[1180px] mx-auto px-6 md:px-8">
             <AnimateOnScroll>
               <div className="mb-16 max-w-[560px]">
-                <span className="text-xs tracking-[0.18em] uppercase text-[var(--gold)] mb-3.5 block">Por qué elegirnos</span>
+                <span className="text-xs tracking-[0.18em] uppercase text-[var(--red)] mb-3.5 block">Por qué elegirnos</span>
                 <h2 className="font-[var(--font-oswald)] text-[clamp(32px,4vw,48px)] font-semibold uppercase tracking-[0.01em]">
                   Cuidado de verdad
                 </h2>
@@ -372,7 +370,7 @@ export default function Home() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
               <AnimateOnScroll delay={0}>
                 <div className="border-t border-[var(--border)] pt-6">
-                  <div className="w-10 h-10 rounded-full border border-[var(--gold)] flex items-center justify-center text-[var(--gold-2)] mb-5">
+                  <div className="w-10 h-10 rounded-full border border-[var(--red)] flex items-center justify-center text-[var(--red-2)] mb-5">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
                       <path d="M12 2l2.4 7.2H22l-6 4.4 2.3 7.2L12 16.4 5.7 20.8 8 13.6 2 9.2h7.6z" />
                     </svg>
@@ -384,7 +382,7 @@ export default function Home() {
 
               <AnimateOnScroll delay={100}>
                 <div className="border-t border-[var(--border)] pt-6">
-                  <div className="w-10 h-10 rounded-full border border-[var(--gold)] flex items-center justify-center text-[var(--gold-2)] mb-5">
+                  <div className="w-10 h-10 rounded-full border border-[var(--red)] flex items-center justify-center text-[var(--red-2)] mb-5">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
                       <circle cx="12" cy="12" r="9" />
                       <path d="M12 7v5l3 3" />
@@ -397,7 +395,7 @@ export default function Home() {
 
               <AnimateOnScroll delay={200}>
                 <div className="border-t border-[var(--border)] pt-6">
-                  <div className="w-10 h-10 rounded-full border border-[var(--gold)] flex items-center justify-center text-[var(--gold-2)] mb-5">
+                  <div className="w-10 h-10 rounded-full border border-[var(--red)] flex items-center justify-center text-[var(--red-2)] mb-5">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
                       <path d="M12 2l8 4v6c0 5-3.4 8.4-8 10-4.6-1.6-8-5-8-10V6l8-4z" />
                     </svg>
@@ -411,10 +409,10 @@ export default function Home() {
         </section>
 
         {/* CTA Band */}
-        <section className="relative py-[100px] bg-[linear-gradient(120deg,rgba(200,30,30,0.12),rgba(201,162,39,0.10))] bg-[var(--bg-alt)] border-t border-[var(--border)] border-b border-[var(--border)] text-center">
+        <section className="relative py-[100px] bg-[linear-gradient(120deg,rgba(200,30,30,0.08),rgba(168,169,173,0.06))] bg-[var(--bg-alt)] border-t border-[var(--border)] border-b border-[var(--border)] text-center">
           <div className="max-w-[1180px] mx-auto px-6 md:px-8">
             <AnimateOnScroll animation="scaleUp">
-              <span className="text-xs tracking-[0.18em] uppercase text-[var(--gold)] mb-3.5 block text-center">
+              <span className="text-xs tracking-[0.18em] uppercase text-[var(--red)] mb-3.5 block text-center">
                 Reservá en segundos
               </span>
               <h2 className="font-[var(--font-oswald)] text-[clamp(34px,5vw,56px)] font-semibold uppercase max-w-[640px] mx-auto mb-5">
@@ -423,10 +421,7 @@ export default function Home() {
               <p className="text-[var(--text-dim)] max-w-[480px] mx-auto mb-9 text-base">
                 Elegí el servicio, el día y el horario que mejor te quede. Confirmación inmediata por email.
               </p>
-              <Link
-                href="/booking"
-                className="inline-flex items-center gap-2 px-7 py-3.5 text-[13px] font-medium tracking-[0.06em] uppercase rounded-[2px] bg-gradient-to-br from-[var(--gold)] to-[var(--gold-2)] text-[#1a1407] hover:shadow-[0_4px_24px_rgba(201,162,39,0.35)] hover:-translate-y-px transition-all duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)] whitespace-nowrap"
-              >
+              <Link href="/booking" className={ctaClasses}>
                 Reservar ahora
               </Link>
             </AnimateOnScroll>
@@ -439,26 +434,30 @@ export default function Home() {
         <div className="max-w-[1180px] mx-auto px-6 md:px-8">
           <div className="flex flex-col md:flex-row justify-between items-start gap-8 pb-12 border-b border-[var(--border)]">
             <div>
-              <Link href="/" className="font-[var(--font-oswald)] text-xl font-semibold tracking-[0.12em] text-[var(--gold-2)]">
-                FULL<span className="text-[var(--foreground)]">SHINE</span>
-              </Link>
-              <p className="text-[var(--text-faint)] text-[13px] mt-3 max-w-[280px]">
+              <Image
+                src="/img/logo.svg"
+                alt="Fullshine Car Detailing"
+                width={140}
+                height={140}
+                className="mb-3"
+              />
+              <p className="text-[var(--text-faint)] text-[13px] max-w-[280px]">
                 Car detailing premium en Bahía Blanca. Tu auto, como nuevo.
               </p>
             </div>
             <div className="flex gap-8">
-              <a href="#" className="text-[13px] text-[var(--text-dim)] tracking-[0.04em] uppercase hover:text-[var(--gold-2)] transition-colors duration-500 ease-out">
+              <a href="#" className="text-[13px] text-[var(--text-dim)] tracking-[0.04em] uppercase hover:text-[var(--red-2)] transition-colors duration-500 ease-out">
                 Instagram
               </a>
               <a
                 href="https://wa.me/5492915275183"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-[13px] text-[var(--text-dim)] tracking-[0.04em] uppercase hover:text-[var(--gold-2)] transition-colors duration-500 ease-out"
+                className="text-[13px] text-[var(--text-dim)] tracking-[0.04em] uppercase hover:text-[var(--red-2)] transition-colors duration-500 ease-out"
               >
                 WhatsApp
               </a>
-              <a href="#servicios" className="text-[13px] text-[var(--text-dim)] tracking-[0.04em] uppercase hover:text-[var(--gold-2)] transition-colors duration-500 ease-out">
+              <a href="#servicios" className="text-[13px] text-[var(--text-dim)] tracking-[0.04em] uppercase hover:text-[var(--red-2)] transition-colors duration-500 ease-out">
                 Servicios
               </a>
             </div>
@@ -475,7 +474,7 @@ export default function Home() {
         href="https://wa.me/5492915275183"
         target="_blank"
         rel="noopener noreferrer"
-        className="fixed bottom-7 right-7 z-50 w-14 h-14 rounded-full bg-[var(--red)] flex items-center justify-center shadow-[0_6px_24px_rgba(200,30,30,0.4)] hover:scale-110 transition-transform"
+        className="fixed bottom-7 right-7 z-50 w-14 h-14 rounded-full bg-[var(--red)] flex items-center justify-center shadow-[0_6px_24px_rgba(200,30,30,0.4)] hover:scale-110 transition-transform duration-500"
         aria-label="WhatsApp"
       >
         <MessageCircle className="w-6 h-6 text-white" />
@@ -499,12 +498,12 @@ export default function Home() {
               <div className="absolute inset-0 bg-gradient-to-t from-[var(--surface)] via-transparent to-transparent" />
               <button
                 onClick={closeModal}
-                className="absolute top-4 right-4 w-9 h-9 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center text-white/70 hover:text-white hover:bg-black/70 transition-all"
+                className="absolute top-4 right-4 w-9 h-9 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center text-white/70 hover:text-white hover:bg-black/70 transition-all duration-300"
               >
                 <X className="w-4 h-4" />
               </button>
               <div className="absolute bottom-4 left-6">
-                <span className="text-[10px] uppercase tracking-[0.15em] text-[var(--gold)]">{selectedService.category}</span>
+                <span className="text-[10px] uppercase tracking-[0.15em] text-[var(--red)]">{selectedService.category}</span>
                 <h3 className="font-[var(--font-oswald)] text-2xl font-semibold uppercase">{selectedService.name}</h3>
               </div>
             </div>
@@ -526,10 +525,10 @@ export default function Home() {
                       <button
                         key={variant.name}
                         onClick={() => setSelectedVariant(variant)}
-                        className={`w-full text-left p-3 rounded-lg border transition-all text-sm ${
+                        className={`w-full text-left p-3 rounded-lg border transition-all duration-300 text-sm ${
                           selectedVariant?.name === variant.name
-                            ? "border-[var(--gold)] bg-[var(--gold)]/5 text-[var(--gold-2)]"
-                            : "border-[var(--border)] hover:border-[var(--gold)]/30 text-[var(--text-dim)]"
+                            ? "border-[var(--red)] bg-[var(--red)]/5 text-[var(--red-2)]"
+                            : "border-[var(--border)] hover:border-[var(--red)]/30 text-[var(--text-dim)]"
                         }`}
                       >
                         <div className="font-medium">{variant.name}</div>
@@ -546,7 +545,7 @@ export default function Home() {
               <Link
                 href={`/booking?category=${selectedService.category}`}
                 onClick={closeModal}
-                className="w-full flex items-center justify-center gap-2 px-6 py-3.5 text-[13px] font-medium tracking-[0.06em] uppercase rounded-[2px] bg-gradient-to-br from-[var(--gold)] to-[var(--gold-2)] text-[#1a1407] hover:shadow-[0_4px_24px_rgba(201,162,39,0.35)] transition-all"
+                className="w-full flex items-center justify-center gap-2 px-6 py-3.5 text-[13px] font-medium tracking-[0.06em] uppercase rounded-[2px] bg-gradient-to-br from-[var(--silver)] via-[var(--silver-2)] to-[var(--silver-3)] text-[#1a1a1a] hover:shadow-[0_4px_24px_rgba(200,200,200,0.3)] transition-all duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)]"
               >
                 Reservar este servicio
                 <ArrowRight className="w-4 h-4" />
