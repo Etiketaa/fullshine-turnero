@@ -166,14 +166,22 @@ export default function Home() {
             : "py-5 md:py-6 bg-gradient-to-b from-[rgba(12,12,12,0.9)] to-transparent border-b border-transparent"
         }`}
       >
-        <Link href="/" className="flex items-center gap-2 group">
+        <Link href="/" className="flex items-center gap-3 group">
           <Image
             src="/img/logo.svg"
             alt="Fullshine Car Detailing"
-            width={44}
-            height={44}
+            width={65}
+            height={65}
             className="group-hover:opacity-80 transition-opacity duration-500"
           />
+          <div className="hidden sm:flex flex-col leading-none">
+            <span className="font-[var(--font-oswald)] text-lg font-semibold tracking-[0.08em] text-white">
+              FULLSHINE
+            </span>
+            <span className="text-[10px] tracking-[0.2em] uppercase text-[var(--text-dim)]">
+              Car Detailing
+            </span>
+          </div>
         </Link>
         <div className="hidden md:flex items-center gap-9">
           <a href="#servicios" className="text-[13px] tracking-[0.08em] uppercase text-[var(--text-dim)] hover:text-[var(--red-2)] transition-colors duration-500 ease-out relative after:content-[''] after:absolute after:left-0 after:bottom-[-6px] after:w-0 after:h-px after:bg-[var(--red)] after:transition-[width] after:duration-500 after:ease-[cubic-bezier(0.25,0.1,0.25,1)] hover:after:w-full">
