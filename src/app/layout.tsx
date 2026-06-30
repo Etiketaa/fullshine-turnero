@@ -1,15 +1,17 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Oswald, Inter } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const oswald = Oswald({
+  variable: "--font-oswald",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
+  weight: ["400", "500", "600"],
 });
 
 const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://fullshine.vercel.app";
@@ -17,7 +19,7 @@ const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://fullshine.vercel.app
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
   title: {
-    default: "Fullshine Car Detailing - Tu auto brilla como nuevo",
+    default: "Fullshine Car Detailing - Tu auto, reinventado",
     template: "%s | Fullshine Car Detailing",
   },
   description:
@@ -42,7 +44,7 @@ export const metadata: Metadata = {
     locale: "es_AR",
     url: baseUrl,
     siteName: "Fullshine Car Detailing",
-    title: "Fullshine Car Detailing - Tu auto brilla como nuevo",
+    title: "Fullshine Car Detailing - Tu auto, reinventado",
     description:
       "Servicios premium de detailing automotriz. Lavado, pulido, ceramic coating y más. Reservá tu turno online.",
     images: [
@@ -56,7 +58,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Fullshine Car Detailing - Tu auto brilla como nuevo",
+    title: "Fullshine Car Detailing - Tu auto, reinventado",
     description:
       "Servicios premium de detailing automotriz. Lavado, pulido, ceramic coating y más.",
     images: ["/og-image.png"],
@@ -85,12 +87,12 @@ export default function RootLayout({
   return (
     <html
       lang="es"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${oswald.variable} ${inter.variable} h-full antialiased`}
     >
       <head>
         <link rel="icon" href="/favicon.ico" sizes="any" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-        <meta name="theme-color" content="#dc2626" />
+        <meta name="theme-color" content="#c81e1e" />
       </head>
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
