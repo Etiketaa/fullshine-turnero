@@ -168,7 +168,7 @@ export default function Home() {
       >
         <Link href="/" className="flex items-center gap-3 group">
           <Image
-            src="/img/logo.svg"
+            src="/img/logo.png"
             alt="Fullshine Car Detailing"
             width={65}
             height={65}
@@ -447,7 +447,7 @@ export default function Home() {
           <div className="flex flex-col md:flex-row justify-between items-start gap-8 pb-12 border-b border-[var(--border)]">
             <div>
               <Image
-                src="/img/logo.svg"
+                src="/img/logo.png"
                 alt="Fullshine Car Detailing"
                 width={140}
                 height={140}
